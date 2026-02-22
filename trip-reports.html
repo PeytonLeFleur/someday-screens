@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Someday — Trip Reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  /* ========================================
+     CSS VARIABLES — Someday Design Tokens
+     ======================================== */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* ========================================
+     RESET + BASE
+     ======================================== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: #E8E4DE;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
+  /* ========================================
+     DEVICE FRAME
+     ======================================== */
+  .device-frame {
+    width: 390px;
+    height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #1A1A1E,
+      0 0 0 4px #3A3A3E,
+      0 20px 60px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  /* Dynamic Island */
+  .device-frame::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 36px;
+    background: #1A1A1E;
+    border-radius: 20px;
+    z-index: 100;
+  }
+
+  /* ========================================
+     VIEW TOGGLE (top-level)
+     ======================================== */
+  .view-toggle-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    padding: 8px 20px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 8px;
+  }
+
+  .view-toggle-bar button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .view-toggle-bar button.active {
+    background: var(--color-secondary);
+    color: #fff;
+  }
+
+  .view-toggle-bar button:not(.active) {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .view-toggle-bar button:not(.active):hover {
+    background: rgba(0,0,0,0.03);
+  }
+
+  /* ========================================
+     SCROLLABLE CONTENT
+     ======================================== */
+  .screen-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 54px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .screen-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ========================================
+     COMMON ELEMENTS
+     ======================================== */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-background);
+    padding: 56px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-text);
+  }
+
+  .header-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--color-surface);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: all 200ms ease;
+    color: var(--color-text);
+  }
+
+  .header-btn:active {
+    transform: scale(0.95);
+  }
+
+  .section-pad {
+    padding: 0 20px;
+  }
+
+  .section {
+    margin-bottom: 24px;
+  }
+
+  .section-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+    margin-bottom: 10px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 0 20px 24px;
+  }
+
+  /* ========================================
+     STAR RATING
+     ======================================== */
+  .star-rating {
+    display: flex;
+    gap: 6px;
+  }
+
+  .star-rating .star {
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    color: var(--color-border);
+    transition: all 150ms ease;
+  }
+
+  .star-rating .star.filled {
+    color: var(--color-cta);
+  }
+
+  .star-rating .star:active {
+    transform: scale(1.2);
+  }
+
+  .star-rating-read {
+    display: flex;
+    gap: 3px;
+  }
+
+  .star-rating-read .star {
+    width: 18px;
+    height: 18px;
+    color: var(--color-cta);
+  }
+
+  /* ========================================
+     WRITE MODE
+     ======================================== */
+  #write-view .content-inner {
+    padding-bottom: 32px;
+  }
+
+  /* Photo Grid */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .photo-slot {
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-slot.filled {
+    background: linear-gradient(135deg, #C4704B 0%, #D4A843 50%, #E8856C 100%);
+  }
+
+  .photo-slot.filled:nth-child(2) {
+    background: linear-gradient(135deg, #1B3A4B 0%, #3A9E8F 60%, #6BC5B8 100%);
+  }
+
+  .photo-slot.filled:nth-child(3) {
+    background: linear-gradient(135deg, #E8856C 0%, #D4A843 50%, #C4704B 100%);
+  }
+
+  .photo-slot.filled::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 50%, rgba(0,0,0,0.25) 100%);
+  }
+
+  .photo-slot.add {
+    border: 2px dashed var(--color-border);
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    color: var(--color-text-secondary);
+  }
+
+  .photo-slot.add:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .photo-slot.add span {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* Text Areas */
+  .write-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+    background: var(--color-surface);
+    resize: none;
+    transition: border-color 200ms ease;
+  }
+
+  .write-textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(196,112,75,0.15);
+  }
+
+  .write-textarea::placeholder {
+    color: var(--color-text-secondary);
+  }
+
+  .write-textarea.small {
+    min-height: 80px;
+  }
+
+  /* Tag Pills */
+  .tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(58,158,143,0.1);
+    color: var(--color-visited);
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 200ms ease;
+  }
+
+  .tag-pill.skip {
+    background: rgba(232,133,108,0.12);
+    color: #C06A52;
+  }
+
+  .tag-pill .remove-tag {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 150ms ease;
+  }
+
+  .tag-pill .remove-tag:hover {
+    opacity: 1;
+  }
+
+  .add-tag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border: 1px dashed var(--color-border);
+    background: transparent;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease;
+    font-family: var(--font-body);
+  }
+
+  .add-tag-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  /* Budget Chips */
+  .budget-chips {
+    display: flex;
+    gap: 10px;
+  }
+
+  .budget-chip {
+    flex: 1;
+    padding: 12px 8px;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease;
+    text-align: center;
+  }
+
+  .budget-chip.selected {
+    border-color: var(--color-visited);
+    background: rgba(58,158,143,0.08);
+    color: var(--color-visited);
+  }
+
+  .budget-chip:active {
+    transform: scale(0.97);
+  }
+
+  /* Verified Badge */
+  .verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(58,158,143,0.06);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(58,158,143,0.15);
+  }
+
+  .verified-badge .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-visited);
+    flex-shrink: 0;
+  }
+
+  .verified-badge span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-visited);
+  }
+
+  /* Submit Button */
+  .btn-primary {
+    width: 100%;
+    padding: 16px 28px;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    min-height: 52px;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  /* ========================================
+     READ MODE
+     ======================================== */
+  #read-view {
+    display: none;
+  }
+
+  /* Author Bar */
+  .author-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+    margin-bottom: 16px;
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-cta));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .author-info {
+    flex: 1;
+  }
+
+  .author-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .verified-icon-small {
+    width: 16px;
+    height: 16px;
+    color: var(--color-visited);
+  }
+
+  .author-date {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Destination Hero */
+  .dest-hero {
+    margin: 0 20px 20px;
+    border-radius: var(--radius-lg);
+    padding: 28px 20px;
+    background: linear-gradient(135deg, #C4704B 0%, #D4A843 60%, #E8856C 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dest-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 30%, rgba(0,0,0,0.3) 100%);
+  }
+
+  .dest-hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dest-hero h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 34px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .dest-hero .dest-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 400;
+  }
+
+  /* Photo Gallery (horizontal scroll) */
+  .photo-gallery {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 0 20px 4px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 24px;
+  }
+
+  .photo-gallery::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery-photo {
+    flex-shrink: 0;
+    width: 220px;
+    aspect-ratio: 3 / 2;
+    border-radius: var(--radius-md);
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+
+  .gallery-photo:nth-child(1) {
+    background: linear-gradient(135deg, #C4704B 0%, #D4A843 50%, #E8856C 100%);
+  }
+  .gallery-photo:nth-child(2) {
+    background: linear-gradient(135deg, #1B3A4B 0%, #3A9E8F 60%, #6BC5B8 100%);
+  }
+  .gallery-photo:nth-child(3) {
+    background: linear-gradient(135deg, #E8856C 0%, #D4A843 50%, #C4704B 100%);
+  }
+  .gallery-photo:nth-child(4) {
+    background: linear-gradient(135deg, #3A9E8F 0%, #1B3A4B 60%, #2D6A7A 100%);
+  }
+
+  /* Story Text */
+  .story-text {
+    font-size: 16px;
+    line-height: 26px;
+    color: var(--color-text);
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+
+  .story-text p {
+    margin-bottom: 16px;
+  }
+
+  .story-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Read Tags */
+  .read-tag-section {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .read-section-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .read-section-title .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .read-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .read-pill {
+    padding: 8px 14px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .read-pill.loved {
+    background: rgba(58,158,143,0.12);
+    color: #2D8276;
+  }
+
+  .read-pill.skip {
+    background: rgba(232,133,108,0.1);
+    color: #B5634C;
+  }
+
+  /* Callout Card */
+  .callout-card {
+    margin: 0 20px 24px;
+    padding: 16px;
+    background: rgba(212,168,67,0.08);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-cta);
+    display: flex;
+    gap: 12px;
+  }
+
+  .callout-card .callout-icon {
+    width: 22px;
+    height: 22px;
+    color: var(--color-cta);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .callout-card p {
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--color-text);
+  }
+
+  /* Budget Badge */
+  .budget-badge-read {
+    margin: 0 20px 24px;
+    padding: 12px 16px;
+    background: rgba(58,158,143,0.06);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(58,158,143,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .budget-badge-read .icon {
+    width: 18px;
+    height: 18px;
+    color: var(--color-visited);
+    flex-shrink: 0;
+  }
+
+  .budget-badge-read span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-visited);
+  }
+
+  /* Helpfulness */
+  .helpfulness {
+    margin: 0 20px 24px;
+    padding: 16px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+  }
+
+  .helpfulness-question {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .helpfulness-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .helpfulness-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+
+  .helpfulness-btn:active {
+    transform: scale(0.96);
+  }
+
+  .helpfulness-btn.active-up {
+    border-color: var(--color-visited);
+    color: var(--color-visited);
+    background: rgba(58,158,143,0.06);
+  }
+
+  .helpfulness-btn.active-down {
+    border-color: var(--color-accent-coral);
+    color: var(--color-accent-coral);
+    background: rgba(232,133,108,0.06);
+  }
+
+  .helpfulness-btn .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .helpfulness-count {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Related Reports */
+  .related-section {
+    padding: 0 20px;
+    margin-bottom: 32px;
+  }
+
+  .related-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .related-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .related-card {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+
+  .related-card:active {
+    transform: scale(0.98);
+  }
+
+  .related-card-img {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .related-card:first-child .related-card-img {
+    background: linear-gradient(135deg, #3A9E8F 0%, #1B3A4B 100%);
+  }
+
+  .related-card:last-child .related-card-img {
+    background: linear-gradient(135deg, #D4A843 0%, #C4704B 100%);
+  }
+
+  .related-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .related-card-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .related-card-meta {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .related-card-meta .stars {
+    display: flex;
+    gap: 1px;
+  }
+
+  .related-card-meta .star-tiny {
+    width: 12px;
+    height: 12px;
+    color: var(--color-cta);
+  }
+
+  /* ========================================
+     ANIMATIONS
+     ======================================== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeInUp 300ms ease forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in {
+      animation: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+
+  <!-- ==========================================
+       VIEW 1: WRITE MODE
+       ========================================== -->
+  <div id="write-view">
+    <div class="screen-content">
+      <!-- Header -->
+      <div class="header">
+        <h1 class="header-title">How was Bali?</h1>
+        <button class="header-btn" aria-label="Close">
+          <i data-lucide="x" style="width:20px;height:20px;"></i>
+        </button>
+      </div>
+
+      <div class="content-inner">
+
+        <!-- Overall Rating -->
+        <div class="section section-pad">
+          <div class="section-label">Overall Rating</div>
+          <div class="star-rating" id="write-stars">
+            <svg class="star filled" data-star="1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star filled" data-star="2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star filled" data-star="3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star filled" data-star="4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star filled" data-star="5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="section section-pad">
+          <div class="section-label">Photos</div>
+          <div class="photo-grid">
+            <div class="photo-slot filled"></div>
+            <div class="photo-slot filled"></div>
+            <div class="photo-slot filled"></div>
+            <div class="photo-slot add" id="add-photo-btn">
+              <i data-lucide="camera" style="width:24px;height:24px;"></i>
+              <span>Add photos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tell Your Story -->
+        <div class="section section-pad">
+          <div class="section-label">Tell your story</div>
+          <textarea class="write-textarea" placeholder="What was the highlight? Any tips for future travelers?">Bali exceeded every expectation. The rice terraces at Tegallalang weren't just beautiful &#8212; watching the morning mist roll through while sipping local coffee was genuinely life-changing. The people are incredibly warm, and the food scene in Ubud alone is worth the trip. Highly recommend the sunrise hike at Mount Batur.</textarea>
+        </div>
+
+        <!-- What did you love? -->
+        <div class="section section-pad">
+          <div class="section-label">What did you love?</div>
+          <div class="tag-container" id="loved-tags">
+            <span class="tag-pill" data-tag="Rice Terraces">Rice Terraces <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <span class="tag-pill" data-tag="Street Food">Street Food <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <span class="tag-pill" data-tag="Friendly Locals">Friendly Locals <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <span class="tag-pill" data-tag="Scooter Adventures">Scooter Adventures <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <button class="add-tag-btn" onclick="addTag('loved-tags')">
+              <i data-lucide="plus" style="width:14px;height:14px;"></i> Add more
+            </button>
+          </div>
+        </div>
+
+        <!-- What would you skip? -->
+        <div class="section section-pad">
+          <div class="section-label">What would you skip?</div>
+          <div class="tag-container" id="skip-tags">
+            <span class="tag-pill skip" data-tag="Kuta Beach (too touristy)">Kuta Beach (too touristy) <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <span class="tag-pill skip" data-tag="Airport taxis (use Grab)">Airport taxis (use Grab) <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <button class="add-tag-btn" onclick="addTag('skip-tags', true)">
+              <i data-lucide="plus" style="width:14px;height:14px;"></i> Add more
+            </button>
+          </div>
+        </div>
+
+        <!-- What do you wish you'd known? -->
+        <div class="section section-pad">
+          <div class="section-label">What do you wish you'd known?</div>
+          <textarea class="write-textarea small" placeholder="Tips for future travelers...">Bring mosquito repellent for the rice terrace visits. Book Nusa Penida boats 2 days ahead.</textarea>
+        </div>
+
+        <!-- Budget Accuracy -->
+        <div class="section section-pad">
+          <div class="section-label">Was our $45-80/day estimate accurate?</div>
+          <div class="budget-chips" id="budget-chips">
+            <button class="budget-chip" data-val="low">Too Low</button>
+            <button class="budget-chip selected" data-val="accurate">Accurate</button>
+            <button class="budget-chip" data-val="high">Too High</button>
+          </div>
+        </div>
+
+        <!-- Verified Badge -->
+        <div class="section section-pad">
+          <div class="verified-badge">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Verified Trip &mdash; Booked through Someday</span>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="section section-pad" style="margin-bottom:0;">
+          <button class="btn-primary" onclick="showToast()">Share Your Experience</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       VIEW 2: READ MODE
+       ========================================== -->
+  <div id="read-view">
+    <div class="screen-content">
+      <!-- Header -->
+      <div class="header">
+        <button class="header-btn" aria-label="Back">
+          <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
+        </button>
+        <h1 class="header-title">Trip Report</h1>
+        <div style="width:40px;"></div>
+      </div>
+
+      <div class="content-inner">
+
+        <!-- Author Bar -->
+        <div class="author-bar">
+          <div class="author-avatar">AT</div>
+          <div class="author-info">
+            <div class="author-name">
+              Alex T.
+              <svg class="verified-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="author-date">October 2025</div>
+          </div>
+          <div class="star-rating-read">
+            <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+        </div>
+
+        <!-- Destination Hero -->
+        <div class="dest-hero">
+          <div class="dest-hero-content">
+            <h2>Bali, Indonesia</h2>
+            <div class="dest-sub">14 days &middot; October 2025</div>
+          </div>
+        </div>
+
+        <!-- Photo Gallery -->
+        <div class="photo-gallery">
+          <div class="gallery-photo"></div>
+          <div class="gallery-photo"></div>
+          <div class="gallery-photo"></div>
+          <div class="gallery-photo"></div>
+        </div>
+
+        <!-- Story -->
+        <div class="story-text">
+          <p>Bali exceeded every expectation. The rice terraces at Tegallalang weren't just beautiful &mdash; watching the morning mist roll through while sipping local coffee was genuinely life-changing.</p>
+          <p>The people are incredibly warm, and the food scene in Ubud alone is worth the trip. Highly recommend the sunrise hike at Mount Batur.</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Loved Section -->
+        <div class="read-tag-section">
+          <div class="read-section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#3A9E8F" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Loved
+          </div>
+          <div class="read-tags">
+            <span class="read-pill loved">Rice Terraces</span>
+            <span class="read-pill loved">Street Food</span>
+            <span class="read-pill loved">Friendly Locals</span>
+            <span class="read-pill loved">Scooter Adventures</span>
+          </div>
+        </div>
+
+        <!-- Would Skip Section -->
+        <div class="read-tag-section">
+          <div class="read-section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#C06A52" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Would Skip
+          </div>
+          <div class="read-tags">
+            <span class="read-pill skip">Kuta Beach (too touristy)</span>
+            <span class="read-pill skip">Airport taxis (use Grab)</span>
+          </div>
+        </div>
+
+        <!-- Wish I'd Known -->
+        <div class="callout-card">
+          <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;color:var(--color-text);">Wish I'd Known</div>
+            <p>Bring mosquito repellent for the rice terrace visits. Book Nusa Penida boats 2 days ahead.</p>
+          </div>
+        </div>
+
+        <!-- Budget Badge -->
+        <div class="budget-badge-read">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Budget estimate was accurate ($45-80/day)</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Helpfulness -->
+        <div class="helpfulness">
+          <div class="helpfulness-question">Was this helpful?</div>
+          <div class="helpfulness-actions">
+            <button class="helpfulness-btn" id="thumbs-up" onclick="toggleHelpful('up')">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+              Yes
+            </button>
+            <button class="helpfulness-btn" id="thumbs-down" onclick="toggleHelpful('down')">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+              No
+            </button>
+          </div>
+          <div class="helpfulness-count">23 people found this helpful</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Related Reports -->
+        <div class="related-section">
+          <div class="related-title">More Bali Trip Reports</div>
+          <div class="related-cards">
+            <div class="related-card">
+              <div class="related-card-img"></div>
+              <div class="related-card-info">
+                <div class="related-card-title">Ubud & Nusa Penida Solo Trip</div>
+                <div class="related-card-meta">
+                  Sarah M. &middot;
+                  <span class="stars">
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </span>
+                  &middot; Sep 2025
+                </div>
+              </div>
+            </div>
+            <div class="related-card">
+              <div class="related-card-img"></div>
+              <div class="related-card-info">
+                <div class="related-card-title">Bali Honeymoon Guide</div>
+                <div class="related-card-meta">
+                  James & Lily &middot;
+                  <span class="stars">
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star-tiny" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </span>
+                  &middot; Aug 2025
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- View Toggle Bar -->
+  <div class="view-toggle-bar">
+    <button id="toggle-write" class="active" onclick="switchView('write')">
+      <i data-lucide="pencil" style="width:15px;height:15px;"></i>
+      Write Mode
+    </button>
+    <button id="toggle-read" onclick="switchView('read')">
+      <i data-lucide="book-open" style="width:15px;height:15px;"></i>
+      Read Mode
+    </button>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" style="
+    position: absolute;
+    bottom: 70px;
+    left: 20px;
+    right: 20px;
+    padding: 14px 20px;
+    background: var(--color-secondary);
+    color: #fff;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 300ms ease;
+    pointer-events: none;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  ">
+    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    Trip report shared successfully!
+  </div>
+
+</div>
+
+<script>
+  // Initialize Lucide icons
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+
+  // ==========================================
+  // View Switching
+  // ==========================================
+  function switchView(view) {
+    const writeView = document.getElementById('write-view');
+    const readView = document.getElementById('read-view');
+    const toggleWrite = document.getElementById('toggle-write');
+    const toggleRead = document.getElementById('toggle-read');
+
+    if (view === 'write') {
+      writeView.style.display = 'block';
+      readView.style.display = 'none';
+      toggleWrite.classList.add('active');
+      toggleRead.classList.remove('active');
+    } else {
+      writeView.style.display = 'none';
+      readView.style.display = 'block';
+      toggleWrite.classList.remove('active');
+      toggleRead.classList.add('active');
+    }
+
+    // Scroll to top
+    const content = (view === 'write' ? writeView : readView).querySelector('.screen-content');
+    if (content) content.scrollTop = 0;
+  }
+
+  // ==========================================
+  // Star Rating (interactive)
+  // ==========================================
+  let currentRating = 5;
+
+  document.getElementById('write-stars').addEventListener('click', (e) => {
+    const star = e.target.closest('.star');
+    if (!star) return;
+
+    const rating = parseInt(star.dataset.star);
+    currentRating = rating;
+    updateStars();
+
+    // Micro animation
+    star.style.transform = 'scale(1.3)';
+    setTimeout(() => { star.style.transform = ''; }, 150);
+  });
+
+  function updateStars() {
+    const stars = document.querySelectorAll('#write-stars .star');
+    stars.forEach((star, i) => {
+      if (i < currentRating) {
+        star.classList.add('filled');
+      } else {
+        star.classList.remove('filled');
+      }
+    });
+  }
+
+  // ==========================================
+  // Tag Removal
+  // ==========================================
+  document.addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('.remove-tag');
+    if (!removeBtn) return;
+
+    const pill = removeBtn.closest('.tag-pill');
+    if (pill) {
+      pill.style.opacity = '0';
+      pill.style.transform = 'scale(0.8)';
+      pill.style.transition = 'all 200ms ease';
+      setTimeout(() => pill.remove(), 200);
+    }
+  });
+
+  // ==========================================
+  // Add Tag
+  // ==========================================
+  function addTag(containerId, isSkip) {
+    const text = prompt('Enter a tag:');
+    if (!text || !text.trim()) return;
+
+    const container = document.getElementById(containerId);
+    const addBtn = container.querySelector('.add-tag-btn');
+
+    const pill = document.createElement('span');
+    pill.className = 'tag-pill' + (isSkip ? ' skip' : '');
+    pill.dataset.tag = text.trim();
+    pill.innerHTML = `${text.trim()} <svg class="remove-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+    pill.style.opacity = '0';
+    pill.style.transform = 'scale(0.8)';
+    container.insertBefore(pill, addBtn);
+    requestAnimationFrame(() => {
+      pill.style.transition = 'all 200ms ease';
+      pill.style.opacity = '1';
+      pill.style.transform = 'scale(1)';
+    });
+  }
+
+  // ==========================================
+  // Budget Chips
+  // ==========================================
+  document.getElementById('budget-chips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.budget-chip');
+    if (!chip) return;
+
+    document.querySelectorAll('.budget-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+  });
+
+  // ==========================================
+  // Photo Add (visual feedback)
+  // ==========================================
+  document.getElementById('add-photo-btn').addEventListener('click', () => {
+    const btn = document.getElementById('add-photo-btn');
+    btn.style.borderColor = 'var(--color-primary)';
+    btn.style.color = 'var(--color-primary)';
+
+    setTimeout(() => {
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 1000);
+  });
+
+  // ==========================================
+  // Helpfulness Voting
+  // ==========================================
+  let helpfulVote = null;
+
+  function toggleHelpful(direction) {
+    const upBtn = document.getElementById('thumbs-up');
+    const downBtn = document.getElementById('thumbs-down');
+
+    if (helpfulVote === direction) {
+      // Unvote
+      helpfulVote = null;
+      upBtn.classList.remove('active-up');
+      downBtn.classList.remove('active-down');
+    } else {
+      helpfulVote = direction;
+      upBtn.classList.remove('active-up');
+      downBtn.classList.remove('active-down');
+      if (direction === 'up') {
+        upBtn.classList.add('active-up');
+      } else {
+        downBtn.classList.add('active-down');
+      }
+    }
+  }
+
+  // ==========================================
+  // Toast Notification
+  // ==========================================
+  function showToast() {
+    const toast = document.getElementById('toast');
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+    }, 2500);
+  }
+</script>
+
+</body>
+</html>

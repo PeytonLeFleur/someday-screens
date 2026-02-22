@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Someday - My Trips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  /* ========== CSS VARIABLES ========== */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-bottom-sheet: 0 -4px 24px rgba(0,0,0,0.15);
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+  }
+
+  /* ========== RESET ========== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Satoshi', 'SF Pro', system-ui, sans-serif;
+    background: #1a1a1e;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ========== DEVICE FRAME ========== */
+  .device-frame {
+    width: 390px;
+    height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 12px #1a1a1e, 0 0 0 14px #333, 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .screen-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ========== STATUS BAR ========== */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 8px;
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    flex-shrink: 0;
+    background: var(--color-background);
+    z-index: 10;
+  }
+
+  .status-bar-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    padding: 4px 20px 12px;
+    flex-shrink: 0;
+    background: var(--color-background);
+    z-index: 10;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .header-title {
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 34px;
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .view-toggle-btn {
+    width: 36px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all 200ms ease;
+  }
+
+  .view-toggle-btn.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .stat-bar {
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-text-secondary);
+  }
+
+  .stat-bar span {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  /* ========== VIEWS CONTAINER ========== */
+  .views-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 350ms ease, transform 350ms ease;
+  }
+
+  .view.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.98);
+  }
+
+  .view.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+
+  /* ========== MAP VIEW ========== */
+  .map-view {
+    background: #0F1729;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .world-map-svg {
+    width: 180%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.9;
+  }
+
+  /* ========== MAP PINS ========== */
+  .map-pin {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 5;
+  }
+
+  .pin-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+
+  .pin-dot.gold {
+    background: var(--color-cta);
+    box-shadow: 0 0 8px rgba(212,168,67,0.6), 0 0 20px rgba(212,168,67,0.3);
+  }
+
+  .pin-dot.teal {
+    background: var(--color-visited);
+    box-shadow: 0 0 6px rgba(58,158,143,0.4);
+  }
+
+  .pin-ring {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+
+  .pin-ring.gold {
+    background: rgba(212,168,67,0.2);
+    animation: pinPulse 2s infinite ease-in-out;
+  }
+
+  .pin-ring.teal {
+    background: rgba(58,158,143,0.15);
+  }
+
+  .pin-bloom {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+  }
+
+  .pin-bloom.gold {
+    background: radial-gradient(circle, rgba(212,168,67,0.15) 0%, transparent 70%);
+    animation: bloomPulse 3s infinite ease-in-out;
+  }
+
+  @keyframes pinPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.4; }
+  }
+
+  @keyframes bloomPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.8); opacity: 0.15; }
+  }
+
+  /* ========== PIN FLOATING CARD ========== */
+  .pin-card {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card-elevated);
+    width: 180px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 250ms ease;
+    z-index: 20;
+  }
+
+  .pin-card.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .pin-card-photo {
+    width: 100%;
+    height: 80px;
+    position: relative;
+  }
+
+  .pin-card-info {
+    padding: 10px 12px;
+  }
+
+  .pin-card-name {
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  .pin-card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 5px 12px;
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 200ms ease;
+  }
+
+  .pin-card-btn:hover {
+    background: #b5613e;
+  }
+
+  .pin-card-arrow {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: var(--color-surface);
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Map legend */
+  .map-legend {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    font-family: 'Satoshi', system-ui, sans-serif;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.gold { background: var(--color-cta); box-shadow: 0 0 4px rgba(212,168,67,0.5); }
+  .legend-dot.teal { background: var(--color-visited); }
+
+  /* Continent labels */
+  .continent-label {
+    position: absolute;
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.12);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ========== LIST VIEW ========== */
+  .list-view {
+    background: var(--color-background);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .list-view::-webkit-scrollbar { display: none; }
+
+  /* Sort/Filter Bar */
+  .sort-filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-background);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .sort-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .sort-dropdown span {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .filter-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all 200ms ease;
+  }
+
+  .filter-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Destination List Items */
+  .dest-list {
+    padding: 8px 0;
+  }
+
+  .dest-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 200ms ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dest-item:active {
+    background: rgba(0,0,0,0.03);
+  }
+
+  .dest-item-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .dest-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dest-item-name {
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 22px;
+  }
+
+  .dest-item-country {
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 18px;
+    margin-top: 2px;
+  }
+
+  .dest-item-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .dest-price {
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+
+  .dest-visited-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(58,158,143,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-visited);
+  }
+
+  .dest-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 0 20px 0 94px;
+  }
+
+  /* Swipe hint animation */
+  .swipe-hint {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-secondary);
+    opacity: 0;
+    animation: swipeHint 3s ease-in-out 1s infinite;
+  }
+
+  @keyframes swipeHint {
+    0%, 100% { opacity: 0; transform: translateY(-50%) translateX(0); }
+    15% { opacity: 0.6; transform: translateY(-50%) translateX(0); }
+    40% { opacity: 0.6; transform: translateY(-50%) translateX(-20px); }
+    60% { opacity: 0; transform: translateY(-50%) translateX(-20px); }
+  }
+
+  /* ========== COLLECTIONS ========== */
+  .collections-section {
+    padding: 24px 0 16px;
+  }
+
+  .collections-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 14px;
+  }
+
+  .collections-title {
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .collections-add-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all 200ms ease;
+  }
+
+  .collections-add-btn:active {
+    transform: scale(0.92);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .collections-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 0 20px 4px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .collections-scroll::-webkit-scrollbar { display: none; }
+
+  .collection-card {
+    flex-shrink: 0;
+    width: 150px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    background: var(--color-surface);
+    cursor: pointer;
+    transition: transform 200ms ease;
+    scroll-snap-align: start;
+  }
+
+  .collection-card:active {
+    transform: scale(0.97);
+  }
+
+  .collection-cover {
+    width: 100%;
+    height: 90px;
+    position: relative;
+  }
+
+  .collection-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 40%, rgba(0,0,0,0.5) 100%);
+  }
+
+  .collection-info {
+    padding: 10px 12px;
+  }
+
+  .collection-name {
+    font-family: 'General Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 18px;
+  }
+
+  .collection-count {
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ========== BOTTOM NAVIGATION ========== */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 28px;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
+    z-index: 20;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: color 200ms ease;
+    position: relative;
+  }
+
+  .nav-item .nav-label {
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .nav-item .nav-icon {
+    color: var(--color-text-secondary);
+  }
+
+  .nav-item.active .nav-label {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .nav-item.active .nav-icon {
+    color: var(--color-primary);
+  }
+
+  /* Import (center raised button) */
+  .nav-import {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-top: -20px;
+    box-shadow: 0 4px 12px rgba(196,112,75,0.35);
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+
+  .nav-import:active {
+    transform: scale(0.93);
+    box-shadow: 0 2px 6px rgba(196,112,75,0.35);
+  }
+
+  /* ========== GRADIENTS FOR PHOTOS ========== */
+  .grad-bali { background: linear-gradient(135deg, #43cea2, #185a9d); }
+  .grad-amalfi { background: linear-gradient(135deg, #E8856C, #C4704B); }
+  .grad-kyoto { background: linear-gradient(135deg, #fbc2eb, #a6c1ee); }
+  .grad-patagonia { background: linear-gradient(135deg, #2c3e50, #3498db); }
+  .grad-iceland { background: linear-gradient(135deg, #4ca1af, #c4e0e5); }
+  .grad-morocco { background: linear-gradient(135deg, #D4A843, #C4704B); }
+  .grad-paris { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .grad-newyork { background: linear-gradient(135deg, #1B3A4B, #3A9E8F); }
+  .grad-cancun { background: linear-gradient(135deg, #11998e, #38ef7d); }
+  .grad-honeymoon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+  .grad-solo { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+  .grad-weekend { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+  /* ========== VIGNETTE EFFECT ON MAP ========== */
+  .map-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(15,23,41,0.85) 100%);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* Subtle grid/atmosphere */
+  .map-atmosphere {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(212,168,67,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(58,158,143,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Stars effect */
+  .map-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pin-ring.gold,
+    .pin-bloom.gold,
+    .swipe-hint {
+      animation: none;
+    }
+    .view { transition: none; }
+    .pin-card { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+  <div class="screen-content">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-bar-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="1" opacity="0.3"/><rect x="4.5" y="2" width="3" height="10" rx="1" opacity="0.5"/><rect x="9" y="1" width="3" height="11" rx="1" opacity="0.7"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="15" height="12" viewBox="0 0 15 12" fill="currentColor"><path d="M7.5 3C9.8 3 11.9 3.9 13.4 5.4L14.8 4C12.9 2.1 10.3 1 7.5 1S2.1 2.1.2 4L1.6 5.4C3.1 3.9 5.2 3 7.5 3ZM7.5 7C8.6 7 9.6 7.4 10.4 8.1L11.8 6.7C10.6 5.6 9.1 5 7.5 5S4.4 5.6 3.2 6.7L4.6 8.1C5.4 7.4 6.4 7 7.5 7ZM7.5 11C8.3 11 9 10.3 9 9.5S8.3 8 7.5 8 6 8.7 6 9.5 6.7 11 7.5 11Z"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor"><rect x="0" y="1" width="21" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1"/><rect x="22" y="4" width="2" height="4" rx="0.5" opacity="0.4"/><rect x="2" y="3" width="14" height="6" rx="1" fill="#3A9E8F"/></svg>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-top">
+        <h1 class="header-title">My Trips</h1>
+        <div class="view-toggle">
+          <button class="view-toggle-btn active" id="mapToggle" onclick="switchView('map')" aria-label="Map view">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </button>
+          <button class="view-toggle-btn" id="listToggle" onclick="switchView('list')" aria-label="List view">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="stat-bar">
+        <span>12</span> destinations saved &middot; <span>3</span> visited &middot; <span>4</span> continents
+      </div>
+    </div>
+
+    <!-- Views Container -->
+    <div class="views-container">
+
+      <!-- MAP VIEW -->
+      <div class="view visible" id="mapView">
+        <div class="map-view">
+          <div class="map-container" id="mapContainer">
+
+            <!-- Stars background -->
+            <div class="map-stars" id="mapStars"></div>
+
+            <!-- World Map SVG -->
+            <svg class="world-map-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0F1729"/>
+                  <stop offset="100%" stop-color="#0D1420"/>
+                </linearGradient>
+                <filter id="countryGlow">
+                  <feGaussianBlur stdDeviation="0.5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Ocean background -->
+              <rect width="1000" height="500" fill="url(#oceanGrad)"/>
+
+              <!-- Graticule lines -->
+              <g stroke="rgba(26,39,68,0.3)" stroke-width="0.5" fill="none">
+                <line x1="0" y1="125" x2="1000" y2="125"/>
+                <line x1="0" y1="250" x2="1000" y2="250"/>
+                <line x1="0" y1="375" x2="1000" y2="375"/>
+                <line x1="250" y1="0" x2="250" y2="500"/>
+                <line x1="500" y1="0" x2="500" y2="500"/>
+                <line x1="750" y1="0" x2="750" y2="500"/>
+              </g>
+
+              <!-- North America -->
+              <path d="M80,80 L140,60 L200,70 L240,90 L260,120 L250,160 L220,180 L200,200 L210,230 L180,250 L160,240 L140,260 L120,240 L100,250 L80,220 L70,180 L60,140 L65,100 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8" filter="url(#countryGlow)"/>
+              <!-- USA main -->
+              <path d="M100,160 L120,150 L160,145 L200,150 L230,165 L240,185 L230,200 L210,210 L180,215 L150,220 L120,210 L100,195 L95,175 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- Central America / Mexico -->
+              <path d="M140,220 L160,225 L175,240 L185,260 L175,275 L160,280 L145,270 L135,250 L130,235 Z"
+                    fill="#151D34" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- South America -->
+              <path d="M200,290 L230,275 L260,280 L280,300 L290,330 L285,360 L275,390 L260,410 L240,425 L220,430 L210,415 L200,390 L195,360 L190,330 L195,310 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8" filter="url(#countryGlow)"/>
+              <!-- Patagonia region -->
+              <path d="M225,400 L240,395 L248,410 L245,430 L235,445 L225,440 L218,425 L220,410 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Europe -->
+              <path d="M420,80 L450,70 L480,75 L510,80 L530,95 L525,120 L510,140 L490,150 L470,145 L450,140 L435,130 L425,110 L420,95 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8" filter="url(#countryGlow)"/>
+              <!-- UK -->
+              <path d="M410,85 L420,80 L425,90 L420,100 L412,98 Z"
+                    fill="#151D34" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- Scandinavia -->
+              <path d="M455,50 L475,40 L490,50 L500,70 L495,85 L480,80 L465,75 L455,65 Z"
+                    fill="#151D34" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- Italy -->
+              <path d="M475,130 L480,125 L490,135 L495,150 L490,165 L482,160 L478,145 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Africa -->
+              <path d="M430,180 L470,170 L510,175 L540,190 L560,220 L565,260 L555,300 L540,340 L520,370 L500,385 L480,380 L460,360 L445,330 L435,290 L430,250 L425,210 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8" filter="url(#countryGlow)"/>
+              <!-- Morocco region -->
+              <path d="M420,170 L440,165 L450,175 L445,190 L435,195 L420,185 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Asia (Russia + Central) -->
+              <path d="M530,50 L600,40 L700,45 L780,55 L830,70 L850,90 L840,120 L800,130 L750,125 L700,115 L650,105 L600,95 L560,85 L540,75 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8" filter="url(#countryGlow)"/>
+              <!-- Middle East -->
+              <path d="M540,150 L570,140 L600,145 L610,165 L600,185 L580,190 L560,180 L545,165 Z"
+                    fill="#151D34" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- India -->
+              <path d="M620,160 L650,150 L680,155 L690,180 L680,210 L660,230 L640,225 L625,200 L620,180 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- China / East Asia -->
+              <path d="M690,100 L730,90 L770,95 L790,110 L800,135 L790,160 L770,175 L740,170 L710,160 L695,140 L690,120 Z"
+                    fill="#151D34" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- Japan -->
+              <path d="M810,110 L820,105 L830,115 L828,130 L818,140 L810,135 L808,120 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Southeast Asia / Indonesia -->
+              <path d="M720,200 L750,195 L780,200 L800,215 L810,235 L795,245 L770,240 L745,230 L730,215 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8"/>
+              <!-- Bali area -->
+              <path d="M760,245 L775,242 L790,248 L795,258 L785,262 L770,258 L762,252 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Australia -->
+              <path d="M770,310 L810,300 L850,305 L880,320 L890,350 L880,380 L860,395 L830,400 L800,390 L780,370 L770,340 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8" filter="url(#countryGlow)"/>
+              <!-- New Zealand -->
+              <path d="M905,380 L915,375 L920,390 L915,400 L905,395 Z"
+                    fill="#151D34" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Iceland -->
+              <path d="M370,55 L385,50 L395,55 L392,65 L380,68 L372,62 Z"
+                    fill="#161F38" stroke="#1A2744" stroke-width="0.8"/>
+
+              <!-- Greenland -->
+              <path d="M280,30 L320,20 L350,30 L355,55 L340,65 L310,60 L285,50 Z"
+                    fill="#141E35" stroke="#1A2744" stroke-width="0.8"/>
+            </svg>
+
+            <!-- Atmosphere overlay -->
+            <div class="map-atmosphere"></div>
+
+            <!-- Continent labels -->
+            <span class="continent-label" style="top:22%;left:14%">North America</span>
+            <span class="continent-label" style="top:62%;left:19%">South America</span>
+            <span class="continent-label" style="top:22%;left:42%">Europe</span>
+            <span class="continent-label" style="top:48%;left:44%">Africa</span>
+            <span class="continent-label" style="top:18%;left:65%">Asia</span>
+            <span class="continent-label" style="top:68%;left:76%">Oceania</span>
+
+            <!-- MAP PINS -->
+
+            <!-- UNVISITED (Gold) -->
+            <!-- Bali -->
+            <div class="map-pin" style="top:51%;left:76%" onclick="togglePinCard(this, event)">
+              <div class="pin-bloom gold"></div>
+              <div class="pin-ring gold"></div>
+              <div class="pin-dot gold"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-bali"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Bali, Indonesia</div>
+                  <button class="pin-card-btn">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Amalfi Coast -->
+            <div class="map-pin" style="top:30%;left:48%" onclick="togglePinCard(this, event)">
+              <div class="pin-bloom gold"></div>
+              <div class="pin-ring gold"></div>
+              <div class="pin-dot gold"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-amalfi"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Amalfi Coast, Italy</div>
+                  <button class="pin-card-btn">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Kyoto -->
+            <div class="map-pin" style="top:28%;left:82%" onclick="togglePinCard(this, event)">
+              <div class="pin-bloom gold"></div>
+              <div class="pin-ring gold"></div>
+              <div class="pin-dot gold"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-kyoto"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Kyoto, Japan</div>
+                  <button class="pin-card-btn">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Patagonia -->
+            <div class="map-pin" style="top:82%;left:24%" onclick="togglePinCard(this, event)">
+              <div class="pin-bloom gold"></div>
+              <div class="pin-ring gold"></div>
+              <div class="pin-dot gold"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-patagonia"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Patagonia, Argentina</div>
+                  <button class="pin-card-btn">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Iceland -->
+            <div class="map-pin" style="top:14%;left:37%" onclick="togglePinCard(this, event)">
+              <div class="pin-bloom gold"></div>
+              <div class="pin-ring gold"></div>
+              <div class="pin-dot gold"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-iceland"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Reykjavik, Iceland</div>
+                  <button class="pin-card-btn">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Morocco -->
+            <div class="map-pin" style="top:38%;left:42%" onclick="togglePinCard(this, event)">
+              <div class="pin-bloom gold"></div>
+              <div class="pin-ring gold"></div>
+              <div class="pin-dot gold"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-morocco"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Marrakech, Morocco</div>
+                  <button class="pin-card-btn">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- VISITED (Teal) -->
+            <!-- Paris -->
+            <div class="map-pin" style="top:24%;left:45%" onclick="togglePinCard(this, event)">
+              <div class="pin-ring teal"></div>
+              <div class="pin-dot teal"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-paris"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Paris, France</div>
+                  <button class="pin-card-btn" style="background:var(--color-visited)">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- New York -->
+            <div class="map-pin" style="top:32%;left:20%" onclick="togglePinCard(this, event)">
+              <div class="pin-ring teal"></div>
+              <div class="pin-dot teal"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-newyork"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">New York, USA</div>
+                  <button class="pin-card-btn" style="background:var(--color-visited)">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Cancun -->
+            <div class="map-pin" style="top:42%;left:17%" onclick="togglePinCard(this, event)">
+              <div class="pin-ring teal"></div>
+              <div class="pin-dot teal"></div>
+              <div class="pin-card">
+                <div class="pin-card-photo grad-cancun"></div>
+                <div class="pin-card-info">
+                  <div class="pin-card-name">Cancun, Mexico</div>
+                  <button class="pin-card-btn" style="background:var(--color-visited)">View Guide</button>
+                </div>
+                <div class="pin-card-arrow"></div>
+              </div>
+            </div>
+
+            <!-- Vignette overlay -->
+            <div class="map-vignette"></div>
+
+            <!-- Legend -->
+            <div class="map-legend">
+              <div class="legend-item">
+                <div class="legend-dot gold"></div>
+                <span>Bucket List</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot teal"></div>
+                <span>Visited</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- LIST VIEW -->
+      <div class="view hidden" id="listView">
+        <div class="list-view">
+
+          <!-- Sort/Filter Bar -->
+          <div class="sort-filter-bar">
+            <button class="sort-dropdown">
+              Sort: <span>Date saved</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button class="filter-btn" aria-label="Filter destinations">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            </button>
+          </div>
+
+          <!-- Destination List -->
+          <div class="dest-list">
+
+            <!-- Bali -->
+            <div class="dest-item" id="firstItem">
+              <div class="dest-item-photo grad-bali"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Bali</div>
+                <div class="dest-item-country">Indonesia</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-price">$487</div>
+              </div>
+              <div class="swipe-hint" id="swipeHint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Amalfi Coast -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-amalfi"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Amalfi Coast</div>
+                <div class="dest-item-country">Italy</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-price">$1,240</div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Paris (visited) -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-paris"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Paris</div>
+                <div class="dest-item-country">France</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-visited-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Kyoto -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-kyoto"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Kyoto</div>
+                <div class="dest-item-country">Japan</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-price">$892</div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- New York (visited) -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-newyork"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">New York</div>
+                <div class="dest-item-country">United States</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-visited-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Patagonia -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-patagonia"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Patagonia</div>
+                <div class="dest-item-country">Argentina</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-price">$1,580</div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Iceland -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-iceland"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Reykjavik</div>
+                <div class="dest-item-country">Iceland</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-price">$735</div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Morocco -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-morocco"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Marrakech</div>
+                <div class="dest-item-country">Morocco</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-price">$410</div>
+              </div>
+            </div>
+            <div class="dest-divider"></div>
+
+            <!-- Cancun (visited) -->
+            <div class="dest-item">
+              <div class="dest-item-photo grad-cancun"></div>
+              <div class="dest-item-info">
+                <div class="dest-item-name">Cancun</div>
+                <div class="dest-item-country">Mexico</div>
+              </div>
+              <div class="dest-item-right">
+                <div class="dest-visited-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Collections Section -->
+          <div class="collections-section">
+            <div class="collections-header">
+              <h2 class="collections-title">Collections</h2>
+              <button class="collections-add-btn" aria-label="Add collection">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+
+            <div class="collections-scroll">
+              <!-- Honeymoon Ideas -->
+              <div class="collection-card">
+                <div class="collection-cover grad-honeymoon">
+                  <div class="collection-cover-overlay"></div>
+                </div>
+                <div class="collection-info">
+                  <div class="collection-name">Honeymoon Ideas</div>
+                  <div class="collection-count">4 destinations</div>
+                </div>
+              </div>
+
+              <!-- Solo Trip 2027 -->
+              <div class="collection-card">
+                <div class="collection-cover grad-solo">
+                  <div class="collection-cover-overlay"></div>
+                </div>
+                <div class="collection-info">
+                  <div class="collection-name">Solo Trip 2027</div>
+                  <div class="collection-count">3 destinations</div>
+                </div>
+              </div>
+
+              <!-- Weekend Drives -->
+              <div class="collection-card">
+                <div class="collection-cover grad-weekend">
+                  <div class="collection-cover-overlay"></div>
+                </div>
+                <div class="collection-info">
+                  <div class="collection-name">Weekend Drives</div>
+                  <div class="collection-count">6 destinations</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spacer for bottom nav -->
+          <div style="height: 24px;"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <div class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <span class="nav-label">Home</span>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <span class="nav-label">Explore</span>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-import">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>
+
+      <div class="nav-item active">
+        <div class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <span class="nav-label">My Trips</span>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span class="nav-label">Profile</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ========== VIEW SWITCHING ==========
+  function switchView(view) {
+    const mapView = document.getElementById('mapView');
+    const listView = document.getElementById('listView');
+    const mapToggle = document.getElementById('mapToggle');
+    const listToggle = document.getElementById('listToggle');
+
+    // Close any open pin cards
+    closeAllPinCards();
+
+    if (view === 'map') {
+      mapView.classList.remove('hidden');
+      mapView.classList.add('visible');
+      listView.classList.remove('visible');
+      listView.classList.add('hidden');
+      mapToggle.classList.add('active');
+      listToggle.classList.remove('active');
+    } else {
+      listView.classList.remove('hidden');
+      listView.classList.add('visible');
+      mapView.classList.remove('visible');
+      mapView.classList.add('hidden');
+      listToggle.classList.add('active');
+      mapToggle.classList.remove('active');
+    }
+  }
+
+  // ========== PIN CARD TOGGLE ==========
+  let activeCard = null;
+
+  function togglePinCard(pinElement, event) {
+    event.stopPropagation();
+    const card = pinElement.querySelector('.pin-card');
+
+    if (activeCard && activeCard !== card) {
+      activeCard.classList.remove('show');
+    }
+
+    if (card.classList.contains('show')) {
+      card.classList.remove('show');
+      activeCard = null;
+    } else {
+      card.classList.add('show');
+      activeCard = card;
+    }
+  }
+
+  function closeAllPinCards() {
+    document.querySelectorAll('.pin-card.show').forEach(card => {
+      card.classList.remove('show');
+    });
+    activeCard = null;
+  }
+
+  // Close cards when clicking on the map background
+  document.getElementById('mapContainer').addEventListener('click', function(e) {
+    if (!e.target.closest('.map-pin')) {
+      closeAllPinCards();
+    }
+  });
+
+  // ========== GENERATE STARS ==========
+  (function generateStars() {
+    const starsContainer = document.getElementById('mapStars');
+    const starCount = 60;
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.opacity = (Math.random() * 0.3 + 0.1).toFixed(2);
+      const size = Math.random() * 1.5 + 0.5;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      starsContainer.appendChild(star);
+    }
+  })();
+
+  // ========== DESTINATION ITEM TOUCH FEEDBACK ==========
+  document.querySelectorAll('.dest-item').forEach(item => {
+    item.addEventListener('touchstart', function() {
+      this.style.background = 'rgba(0,0,0,0.03)';
+    }, { passive: true });
+    item.addEventListener('touchend', function() {
+      setTimeout(() => { this.style.background = ''; }, 150);
+    }, { passive: true });
+  });
+</script>
+
+</body>
+</html>

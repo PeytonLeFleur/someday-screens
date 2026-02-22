@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bali, Indonesia — Someday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  /* ═══════════════════════════════════════════
+     CSS CUSTOM PROPERTIES — SOMEDAY DESIGN SYSTEM
+     ═══════════════════════════════════════════ */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-bottom-sheet: 0 -4px 24px rgba(0,0,0,0.15);
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    --font-heading: 'DM Sans', 'SF Pro Display', 'Roboto', system-ui, sans-serif;
+    --font-body: 'Inter', 'SF Pro Text', 'Roboto', system-ui, sans-serif;
+
+    --safe-top: env(safe-area-inset-top, 44px);
+    --safe-bottom: env(safe-area-inset-bottom, 34px);
+  }
+
+  /* ═══════════════════════════════════════════
+     RESET & BASE
+     ═══════════════════════════════════════════ */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: #111;
+    color: var(--color-text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+  }
+
+  /* ═══════════════════════════════════════════
+     DEVICE FRAME
+     ═══════════════════════════════════════════ */
+  .device-frame {
+    width: 390px;
+    max-width: 390px;
+    min-height: 844px;
+    background: var(--color-background);
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 40px;
+    box-shadow: 0 0 0 3px #222, 0 0 0 6px #111, 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .device-frame::-webkit-scrollbar {
+    display: none;
+  }
+
+  .device-frame {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ═══════════════════════════════════════════
+     STICKY HEADER (appears on scroll)
+     ═══════════════════════════════════════════ */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(250, 247, 242, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 48px 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid transparent;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 300ms ease, opacity 300ms ease, border-color 200ms ease;
+    pointer-events: none;
+  }
+
+  .sticky-header.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+    border-bottom-color: var(--color-border);
+  }
+
+  .sticky-header .back-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    flex-shrink: 0;
+    transition: transform 150ms ease;
+  }
+
+  .sticky-header .back-btn:active {
+    transform: scale(0.93);
+  }
+
+  .sticky-header .dest-name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--color-text);
+    flex: 1;
+  }
+
+  .sticky-header .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sticky-header .header-actions button {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: transform 150ms ease;
+  }
+
+  .sticky-header .header-actions button:active {
+    transform: scale(0.93);
+  }
+
+  /* ═══════════════════════════════════════════
+     HERO SECTION
+     ═══════════════════════════════════════════ */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    margin-top: -100px; /* overlap sticky header space */
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #C4704B 0%, #D4A843 35%, #E8856C 55%, #3A9E8F 75%, #1B3A4B 100%);
+    background-size: 100% 120%;
+    will-change: transform;
+    transition: transform 0ms;
+    animation: heroBreath 20s ease-in-out infinite;
+  }
+
+  @keyframes heroBreath {
+    0%, 100% { background-size: 110% 130%; }
+    50% { background-size: 120% 140%; }
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.15) 0%,
+      transparent 30%,
+      transparent 45%,
+      rgba(0,0,0,0.55) 100%
+    );
+  }
+
+  /* Decorative texture on hero */
+  .hero-texture {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .hero-nav {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .hero-nav button {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 200ms ease;
+  }
+
+  .hero-nav button:active {
+    transform: scale(0.92);
+    background: rgba(255,255,255,0.28);
+  }
+
+  .hero-nav .right-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 24px 28px;
+    z-index: 5;
+  }
+
+  .hero-content h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 42px;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    margin-bottom: 2px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero-content .hero-country {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: rgba(255,255,255,0.8);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.25);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .hero-content .hero-tagline {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(255,255,255,0.88);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.2);
+    line-height: 20px;
+    max-width: 320px;
+  }
+
+  .hero-content .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 8px;
+    font-family: var(--font-heading);
+  }
+
+  /* ═══════════════════════════════════════════
+     QUICK STATS BAR
+     ═══════════════════════════════════════════ */
+  .stats-bar {
+    display: flex;
+    gap: 10px;
+    padding: 20px 20px 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 20px;
+  }
+
+  .stats-bar::-webkit-scrollbar { display: none; }
+
+  .stat-chip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1px solid var(--color-border);
+  }
+
+  .stat-chip:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .stat-chip:last-child {
+    margin-right: 20px;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stat-icon.flight { background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .stat-icon.weather { background: rgba(212,168,67,0.12); color: #D4A843; }
+  .stat-icon.budget { background: rgba(58,158,143,0.1); color: #3A9E8F; }
+  .stat-icon.duration { background: rgba(196,112,75,0.1); color: #C4704B; }
+  .stat-icon.visa { background: rgba(34,197,94,0.1); color: #22c55e; }
+  .stat-icon.currency { background: rgba(168,85,247,0.1); color: #a855f7; }
+
+  .stat-text {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading);
+    line-height: 14px;
+  }
+
+  .stat-value {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 18px;
+  }
+
+  /* ═══════════════════════════════════════════
+     SECTION STYLES (shared)
+     ═══════════════════════════════════════════ */
+  .section {
+    padding: 0 20px;
+    margin-top: var(--space-xl);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+  }
+
+  .section-subtitle {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 20px;
+    margin-bottom: 20px;
+    margin-top: -8px;
+  }
+
+  /* ═══════════════════════════════════════════
+     OVERVIEW SECTION
+     ═══════════════════════════════════════════ */
+  .overview-text {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 26px;
+    color: var(--color-text);
+  }
+
+  .overview-text p {
+    margin-bottom: 16px;
+  }
+
+  .overview-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .overview-dropcap::first-letter {
+    font-family: var(--font-heading);
+    font-size: 52px;
+    font-weight: 700;
+    float: left;
+    line-height: 42px;
+    padding-right: 8px;
+    padding-top: 4px;
+    color: var(--color-primary);
+  }
+
+  /* ═══════════════════════════════════════════
+     BEST TIME TO GO — MONTH BAR
+     ═══════════════════════════════════════════ */
+  .month-bar {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+    margin-bottom: 16px;
+  }
+
+  .month-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .month-block .bar {
+    width: 100%;
+    height: 32px;
+    border-radius: 4px;
+    transition: all 200ms ease;
+  }
+
+  .month-block .bar.good { background: var(--color-visited); }
+  .month-block .bar.okay { background: var(--color-cta); }
+  .month-block .bar.bad { background: var(--color-error); }
+
+  .month-block .label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-family: var(--font-heading);
+  }
+
+  .time-callout {
+    background: rgba(58,158,143,0.08);
+    border-left: 3px solid var(--color-visited);
+    padding: 12px 14px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text);
+  }
+
+  .time-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+  }
+
+  /* ═══════════════════════════════════════════
+     FLIGHT CARDS
+     ═══════════════════════════════════════════ */
+  .flight-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .flight-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flight-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .flight-card.featured {
+    border-color: var(--color-primary);
+    border-width: 1.5px;
+  }
+
+  .flight-airline-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-secondary);
+    font-family: var(--font-heading);
+    letter-spacing: -0.5px;
+  }
+
+  .flight-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .flight-airline {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 18px;
+  }
+
+  .flight-details {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 16px;
+    margin-top: 2px;
+  }
+
+  .flight-price-col {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .flight-price {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 24px;
+  }
+
+  .flight-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-family: var(--font-heading);
+    margin-top: 4px;
+  }
+
+  .flight-badge.teal { background: rgba(58,158,143,0.12); color: var(--color-visited); }
+  .flight-badge.gold { background: rgba(212,168,67,0.12); color: #b8922c; }
+  .flight-badge.primary { background: rgba(196,112,75,0.12); color: var(--color-primary); }
+
+  .track-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-primary);
+    background: transparent;
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 14px;
+    transition: all 200ms ease;
+  }
+
+  .track-btn:active {
+    background: rgba(196,112,75,0.06);
+    transform: scale(0.98);
+  }
+
+  /* ═══════════════════════════════════════════
+     DRIVE VS FLY COMPARISON
+     ═══════════════════════════════════════════ */
+  .comparison-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .comparison-header {
+    padding: 14px 16px;
+    background: var(--color-secondary);
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .comparison-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .comparison-side {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .comparison-side:first-child {
+    border-right: 1px solid var(--color-border);
+  }
+
+  .comparison-side .mode-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text);
+  }
+
+  .comparison-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .comparison-row .cr-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading);
+  }
+
+  .comparison-row .cr-value {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .comparison-verdict {
+    padding: 12px 16px;
+    background: rgba(58,158,143,0.06);
+    border-top: 1px solid var(--color-border);
+    font-size: 13px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 18px;
+  }
+
+  .comparison-verdict strong {
+    color: var(--color-visited);
+  }
+
+  /* ═══════════════════════════════════════════
+     ACCOMMODATION CARDS (horizontal scroll)
+     ═══════════════════════════════════════════ */
+  .stay-scroll {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px 4px;
+    margin: 0 -20px;
+    scroll-padding: 20px;
+  }
+
+  .stay-scroll::-webkit-scrollbar { display: none; }
+
+  .stay-card {
+    flex-shrink: 0;
+    width: 260px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1px solid var(--color-border);
+  }
+
+  .stay-card:first-child {
+    margin-left: 20px;
+  }
+
+  .stay-card:last-child {
+    margin-right: 20px;
+  }
+
+  .stay-card:active {
+    transform: scale(0.97);
+  }
+
+  .stay-photo {
+    width: 100%;
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stay-photo .gradient-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .stay-price-tag {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    color: white;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .stay-info {
+    padding: 14px;
+  }
+
+  .stay-name {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 20px;
+  }
+
+  .stay-location {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stay-desc {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+  }
+
+  /* ═══════════════════════════════════════════
+     FILTER PILLS
+     ═══════════════════════════════════════════ */
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    margin-bottom: 16px;
+  }
+
+  .filter-pills::-webkit-scrollbar { display: none; }
+
+  .pill {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: all 200ms ease;
+    white-space: nowrap;
+  }
+
+  .pill:active {
+    transform: scale(0.95);
+  }
+
+  .pill.active {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+  }
+
+  /* ═══════════════════════════════════════════
+     ACTIVITY CARDS
+     ═══════════════════════════════════════════ */
+  .activity-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .activity-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1px solid var(--color-border);
+  }
+
+  .activity-card:active {
+    transform: scale(0.98);
+  }
+
+  .activity-photo {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .activity-photo .gradient-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .activity-photo .gem-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--color-cta);
+    color: white;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .activity-info {
+    padding: 14px 16px;
+  }
+
+  .activity-name {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 22px;
+  }
+
+  .activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .activity-meta .category-pill {
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(196,112,75,0.08);
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+  }
+
+  .activity-meta .meta-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-border);
+  }
+
+  .activity-meta .meta-text {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  /* ═══════════════════════════════════════════
+     FOOD CARDS
+     ═══════════════════════════════════════════ */
+  .food-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .food-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1px solid var(--color-border);
+  }
+
+  .food-card:active {
+    transform: scale(0.98);
+  }
+
+  .food-photo {
+    width: 100px;
+    height: 110px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .food-photo .gradient-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .food-info {
+    padding: 12px 14px;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .food-name {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 18px;
+  }
+
+  .food-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .food-tag {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  .food-tag-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-border);
+  }
+
+  .food-rec {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 17px;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ═══════════════════════════════════════════
+     FLOATING CTA
+     ═══════════════════════════════════════════ */
+  .floating-cta {
+    position: sticky;
+    bottom: 24px;
+    left: 50%;
+    z-index: 90;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px 0;
+    margin-top: 32px;
+    pointer-events: none;
+  }
+
+  .floating-cta button {
+    pointer-events: all;
+    padding: 16px 40px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--color-primary);
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(196,112,75,0.4), 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 200ms ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .floating-cta button:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 12px rgba(196,112,75,0.3);
+  }
+
+  /* Bottom spacer for floating CTA clearance */
+  .bottom-spacer {
+    height: 90px;
+  }
+
+  /* ═══════════════════════════════════════════
+     GRADIENT IMAGE SIMULATIONS
+     ═══════════════════════════════════════════ */
+  .grad-bali-1 {
+    background: linear-gradient(135deg, #2d7d6a 0%, #5fad7a 30%, #a3d48a 60%, #e8d5a0 100%);
+  }
+  .grad-bali-2 {
+    background: linear-gradient(150deg, #3A9E8F 0%, #6bc2a4 40%, #c4e0b2 70%, #f5e6c8 100%);
+  }
+  .grad-bali-3 {
+    background: linear-gradient(120deg, #1B3A4B 0%, #2d6b7a 40%, #6db8b0 80%, #d4ddd8 100%);
+  }
+  .grad-bali-4 {
+    background: linear-gradient(140deg, #C4704B 0%, #e8a86c 35%, #f5d49a 70%, #faf3e4 100%);
+  }
+  .grad-bali-5 {
+    background: linear-gradient(130deg, #D4A843 0%, #c47a3b 40%, #8b4a30 80%, #4a2a1e 100%);
+  }
+  .grad-bali-6 {
+    background: linear-gradient(145deg, #1B3A4B 0%, #3A9E8F 50%, #D4A843 100%);
+  }
+  .grad-bali-7 {
+    background: linear-gradient(160deg, #6b4226 0%, #c47d40 35%, #e8b860 65%, #f2e0a0 100%);
+  }
+  .grad-bali-8 {
+    background: linear-gradient(135deg, #264653 0%, #2a9d8f 40%, #e9c46a 100%);
+  }
+  .grad-bali-9 {
+    background: linear-gradient(150deg, #e76f51 0%, #f4a261 50%, #e9c46a 100%);
+  }
+  .grad-food-1 {
+    background: linear-gradient(135deg, #8b4513 0%, #cd853f 45%, #deb887 100%);
+  }
+  .grad-food-2 {
+    background: linear-gradient(145deg, #2d5016 0%, #6b8e23 45%, #bdb76b 100%);
+  }
+  .grad-food-3 {
+    background: linear-gradient(130deg, #4a1a2e 0%, #8b2252 40%, #cd5c5c 80%, #f0c0a0 100%);
+  }
+  .grad-food-4 {
+    background: linear-gradient(140deg, #3e2723 0%, #795548 40%, #bcaaa4 80%, #efebe9 100%);
+  }
+
+  /* ═══════════════════════════════════════════
+     DIVIDER
+     ═══════════════════════════════════════════ */
+  .section-divider {
+    width: calc(100% - 40px);
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--space-xl) auto 0;
+  }
+
+  /* ═══════════════════════════════════════════
+     ANIMATIONS
+     ═══════════════════════════════════════════ */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    opacity: 0;
+    animation: fadeInUp 500ms ease forwards;
+  }
+
+  .delay-1 { animation-delay: 100ms; }
+  .delay-2 { animation-delay: 200ms; }
+  .delay-3 { animation-delay: 300ms; }
+  .delay-4 { animation-delay: 400ms; }
+  .delay-5 { animation-delay: 500ms; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+    .hero-bg { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     DEVICE FRAME
+     ═══════════════════════════════════════════ -->
+<div class="device-frame" id="deviceFrame">
+
+  <!-- STICKY HEADER -->
+  <div class="sticky-header" id="stickyHeader">
+    <button class="back-btn" aria-label="Go back">
+      <i data-lucide="arrow-left" style="width:18px;height:18px;color:var(--color-text);"></i>
+    </button>
+    <span class="dest-name">Bali</span>
+    <div class="header-actions">
+      <button aria-label="Share">
+        <i data-lucide="share" style="width:16px;height:16px;color:var(--color-text);"></i>
+      </button>
+      <button aria-label="Bookmark">
+        <i data-lucide="bookmark" style="width:16px;height:16px;color:var(--color-text);"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       1. HERO SECTION
+       ═══════════════════════════════════════ -->
+  <section class="hero" id="heroSection">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-texture"></div>
+    <div class="hero-overlay"></div>
+
+    <nav class="hero-nav">
+      <button aria-label="Go back">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
+      </button>
+      <div class="right-actions">
+        <button aria-label="Share destination">
+          <i data-lucide="share" style="width:18px;height:18px;"></i>
+        </button>
+        <button aria-label="Save to bucket list">
+          <i data-lucide="bookmark" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <h1>Bali</h1>
+      <div class="hero-country">Indonesia</div>
+      <div class="hero-tagline">Jungle temples, rice terraces, and the best $3 meal you'll ever eat.</div>
+      <div class="ai-badge">
+        <i data-lucide="sparkles" style="width:10px;height:10px;"></i>
+        AI-curated guide
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       2. QUICK STATS BAR
+       ═══════════════════════════════════════ -->
+  <div class="stats-bar">
+    <div class="stat-chip animate-in delay-1">
+      <div class="stat-icon flight">
+        <i data-lucide="plane" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="stat-text">
+        <span class="stat-label">Cheapest flight</span>
+        <span class="stat-value">$487</span>
+      </div>
+    </div>
+    <div class="stat-chip animate-in delay-2">
+      <div class="stat-icon weather">
+        <i data-lucide="sun" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="stat-text">
+        <span class="stat-label">Best months</span>
+        <span class="stat-value">Apr-Oct</span>
+      </div>
+    </div>
+    <div class="stat-chip animate-in delay-3">
+      <div class="stat-icon budget">
+        <i data-lucide="wallet" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="stat-text">
+        <span class="stat-label">Daily budget</span>
+        <span class="stat-value">$45-80/day</span>
+      </div>
+    </div>
+    <div class="stat-chip animate-in delay-4">
+      <div class="stat-icon duration">
+        <i data-lucide="clock" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="stat-text">
+        <span class="stat-label">Ideal trip</span>
+        <span class="stat-value">7-10 days</span>
+      </div>
+    </div>
+    <div class="stat-chip animate-in delay-5">
+      <div class="stat-icon visa">
+        <i data-lucide="stamp" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="stat-text">
+        <span class="stat-label">Visa</span>
+        <span class="stat-value">No visa needed</span>
+      </div>
+    </div>
+    <div class="stat-chip animate-in delay-5">
+      <div class="stat-icon currency">
+        <i data-lucide="arrow-up-down" style="width:16px;height:16px;"></i>
+      </div>
+      <div class="stat-text">
+        <span class="stat-label">Currency</span>
+        <span class="stat-value">$ goes 3.2x further</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       3. OVERVIEW
+       ═══════════════════════════════════════ -->
+  <section class="section">
+    <h2 class="section-title">Overview</h2>
+    <div class="overview-text">
+      <p class="overview-dropcap">Bali hits different than most tropical destinations. The rice terraces of Tegallalang aren't just for photos -- watching a local farmer tend his paddies while mist rolls through the valley is the kind of moment that changes how you see the world. This island earns its reputation not through overproduced resort glamour, but through genuine warmth, spiritual richness, and food so good you'll dream about it for years.</p>
+      <p>Start your mornings with a strong Balinese coffee on a bamboo balcony overlooking the jungle. Spend your afternoons getting lost in Ubud's artisan workshops or catching waves off Uluwatu's limestone cliffs. By evening, find a beachside warung where the sunset is free and the grilled seafood costs less than your morning latte back home.</p>
+      <p>Whether you're a first-timer or a frequent returnee, Bali has a way of revealing something new every visit. The island's soul lives in the details -- the daily flower offerings on every doorstep, the gamelan music drifting through temple courtyards, the impossible green of a jungle canopy after rain.</p>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       4. BEST TIME TO GO
+       ═══════════════════════════════════════ -->
+  <section class="section">
+    <h2 class="section-title">Best Time to Go</h2>
+    <div class="time-legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--color-visited)"></div>
+        Ideal
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--color-cta)"></div>
+        Shoulder
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--color-error)"></div>
+        Wet season
+      </div>
+    </div>
+    <div class="month-bar">
+      <div class="month-block"><div class="bar bad"></div><span class="label">Jan</span></div>
+      <div class="month-block"><div class="bar bad"></div><span class="label">Feb</span></div>
+      <div class="month-block"><div class="bar okay"></div><span class="label">Mar</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">Apr</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">May</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">Jun</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">Jul</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">Aug</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">Sep</span></div>
+      <div class="month-block"><div class="bar good"></div><span class="label">Oct</span></div>
+      <div class="month-block"><div class="bar okay"></div><span class="label">Nov</span></div>
+      <div class="month-block"><div class="bar bad"></div><span class="label">Dec</span></div>
+    </div>
+    <div class="time-callout">
+      <strong>The sweet spot is May-September</strong> -- dry season with clear skies and smaller crowds before peak summer. Shoulder months (March, November) offer decent weather with better deals.
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       5. GETTING THERE — FLIGHTS
+       ═══════════════════════════════════════ -->
+  <section class="section">
+    <h2 class="section-title">Getting There</h2>
+    <p class="section-subtitle">Flights from your area to Ngurah Rai (DPS)</p>
+
+    <div class="flight-cards">
+      <!-- Best Value -->
+      <div class="flight-card">
+        <div class="flight-airline-logo">QR</div>
+        <div class="flight-info">
+          <div class="flight-airline">Qatar Airways</div>
+          <div class="flight-details">1 stop via Doha &middot; 22h total</div>
+        </div>
+        <div class="flight-price-col">
+          <div class="flight-price">$487</div>
+          <span class="flight-badge teal">Best Value</span>
+        </div>
+      </div>
+
+      <!-- Fastest -->
+      <div class="flight-card">
+        <div class="flight-airline-logo">SQ</div>
+        <div class="flight-info">
+          <div class="flight-airline">Singapore Airlines</div>
+          <div class="flight-details">1 stop via Singapore &middot; 18h total</div>
+        </div>
+        <div class="flight-price-col">
+          <div class="flight-price">$612</div>
+          <span class="flight-badge gold">Fastest</span>
+        </div>
+      </div>
+
+      <!-- Best Overall -->
+      <div class="flight-card featured">
+        <div class="flight-airline-logo">EK</div>
+        <div class="flight-info">
+          <div class="flight-airline">Emirates</div>
+          <div class="flight-details">1 stop via Dubai &middot; 20h total</div>
+        </div>
+        <div class="flight-price-col">
+          <div class="flight-price">$534</div>
+          <span class="flight-badge primary">Best Overall</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="track-btn">
+      <i data-lucide="bell" style="width:16px;height:16px;"></i>
+      Track Prices
+    </button>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       6. DRIVE VS FLY COMPARISON
+       ═══════════════════════════════════════ -->
+  <section class="section">
+    <h2 class="section-title" style="font-size:18px;">Road Trip Alternative</h2>
+    <p class="section-subtitle">What if you're already in Southeast Asia?</p>
+
+    <div class="comparison-card">
+      <div class="comparison-header">
+        <i data-lucide="git-compare" style="width:16px;height:16px;"></i>
+        Jakarta to Bali
+      </div>
+      <div class="comparison-body">
+        <div class="comparison-side">
+          <div class="mode-icon">
+            <i data-lucide="car" style="width:14px;height:14px;color:var(--color-primary);"></i>
+            Drive + Ferry
+          </div>
+          <div class="comparison-row">
+            <span class="cr-label">Duration</span>
+            <span class="cr-value">16-18h</span>
+          </div>
+          <div class="comparison-row">
+            <span class="cr-label">Cost</span>
+            <span class="cr-value">~$65</span>
+          </div>
+          <div class="comparison-row">
+            <span class="cr-label">Stops</span>
+            <span class="cr-value">2-3 scenic</span>
+          </div>
+        </div>
+        <div class="comparison-side">
+          <div class="mode-icon">
+            <i data-lucide="plane" style="width:14px;height:14px;color:var(--color-secondary);"></i>
+            Fly Direct
+          </div>
+          <div class="comparison-row">
+            <span class="cr-label">Duration</span>
+            <span class="cr-value">1h 45m</span>
+          </div>
+          <div class="comparison-row">
+            <span class="cr-label">Cost</span>
+            <span class="cr-value">~$45</span>
+          </div>
+          <div class="comparison-row">
+            <span class="cr-label">Stops</span>
+            <span class="cr-value">Nonstop</span>
+          </div>
+        </div>
+      </div>
+      <div class="comparison-verdict">
+        <i data-lucide="lightbulb" style="width:14px;height:14px;color:var(--color-visited);flex-shrink:0;"></i>
+        <span><strong>Fly if short on time.</strong> Drive if you want the adventure -- Java's scenery is unforgettable.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       7. WHERE TO STAY
+       ═══════════════════════════════════════ -->
+  <section class="section" style="padding-right:0;">
+    <h2 class="section-title" style="padding-right:20px;">Where to Stay</h2>
+    <p class="section-subtitle" style="padding-right:20px;">Hand-picked accommodations for every budget</p>
+
+    <div class="stay-scroll">
+      <!-- Card 1 -->
+      <div class="stay-card">
+        <div class="stay-photo">
+          <div class="gradient-img grad-bali-1"></div>
+          <span class="stay-price-tag">$45/night</span>
+        </div>
+        <div class="stay-info">
+          <div class="stay-name">Bamboo Eco Lodge</div>
+          <div class="stay-location">
+            <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+            Ubud
+          </div>
+          <div class="stay-desc">Wake up to rice terrace views and the best breakfast in Bali.</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="stay-card">
+        <div class="stay-photo">
+          <div class="gradient-img grad-bali-3"></div>
+          <span class="stay-price-tag">$120/night</span>
+        </div>
+        <div class="stay-info">
+          <div class="stay-name">Villa Seminyak Beach</div>
+          <div class="stay-location">
+            <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+            Seminyak
+          </div>
+          <div class="stay-desc">Walking distance to beach clubs and sunset cocktails.</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="stay-card">
+        <div class="stay-photo">
+          <div class="gradient-img grad-bali-6"></div>
+          <span class="stay-price-tag">$28/night</span>
+        </div>
+        <div class="stay-info">
+          <div class="stay-name">Canggu Surf Hostel</div>
+          <div class="stay-location">
+            <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+            Canggu
+          </div>
+          <div class="stay-desc">Board rental included. Coffee shop downstairs. Digital nomad paradise.</div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="stay-card">
+        <div class="stay-photo">
+          <div class="gradient-img grad-bali-4"></div>
+          <span class="stay-price-tag">$280/night</span>
+        </div>
+        <div class="stay-info">
+          <div class="stay-name">Alila Villas Uluwatu</div>
+          <div class="stay-location">
+            <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+            Uluwatu
+          </div>
+          <div class="stay-desc">Cliffside infinity pool with the most dramatic ocean view on the island.</div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="stay-card">
+        <div class="stay-photo">
+          <div class="gradient-img grad-bali-2"></div>
+          <span class="stay-price-tag">$75/night</span>
+        </div>
+        <div class="stay-info">
+          <div class="stay-name">Tegallalang Hideaway</div>
+          <div class="stay-location">
+            <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+            Tegallalang
+          </div>
+          <div class="stay-desc">Boutique treehouses perched above the terraces. Pure tranquility.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       8. THINGS TO DO
+       ═══════════════════════════════════════ -->
+  <section class="section">
+    <h2 class="section-title">Things to Do</h2>
+
+    <div class="filter-pills">
+      <span class="pill active">All</span>
+      <span class="pill">Hike</span>
+      <span class="pill">Culture</span>
+      <span class="pill">Food</span>
+      <span class="pill">Water</span>
+      <span class="pill">Adventure</span>
+      <span class="pill">Hidden Gem</span>
+    </div>
+
+    <div class="activity-cards">
+      <!-- Activity 1 -->
+      <div class="activity-card">
+        <div class="activity-photo">
+          <div class="gradient-img grad-bali-1"></div>
+        </div>
+        <div class="activity-info">
+          <div class="activity-name">Tegallalang Rice Terraces</div>
+          <div class="activity-meta">
+            <span class="category-pill">Culture</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">2-3 hours</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">Free</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity 2 -->
+      <div class="activity-card">
+        <div class="activity-photo">
+          <div class="gradient-img grad-bali-5"></div>
+          <div class="gem-tag">
+            <i data-lucide="gem" style="width:10px;height:10px;"></i>
+            Hidden Gem
+          </div>
+        </div>
+        <div class="activity-info">
+          <div class="activity-name">Mount Batur Sunrise Trek</div>
+          <div class="activity-meta">
+            <span class="category-pill" style="background:rgba(58,158,143,0.1);color:var(--color-visited);">Hike</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">6 hours</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">$35</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity 3 -->
+      <div class="activity-card">
+        <div class="activity-photo">
+          <div class="gradient-img grad-bali-8"></div>
+        </div>
+        <div class="activity-info">
+          <div class="activity-name">Uluwatu Temple &amp; Kecak Dance</div>
+          <div class="activity-meta">
+            <span class="category-pill">Culture</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">3 hours</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">$5</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity 4 -->
+      <div class="activity-card">
+        <div class="activity-photo">
+          <div class="gradient-img grad-bali-2"></div>
+        </div>
+        <div class="activity-info">
+          <div class="activity-name">Ubud Monkey Forest</div>
+          <div class="activity-meta">
+            <span class="category-pill" style="background:rgba(58,158,143,0.1);color:var(--color-visited);">Nature</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">1-2 hours</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">$4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity 5 -->
+      <div class="activity-card">
+        <div class="activity-photo">
+          <div class="gradient-img grad-bali-9"></div>
+        </div>
+        <div class="activity-info">
+          <div class="activity-name">Nusa Penida Day Trip</div>
+          <div class="activity-meta">
+            <span class="category-pill" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Water</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">Full day</span>
+            <span class="meta-dot"></span>
+            <span class="meta-text">$50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       9. FOOD & DRINK
+       ═══════════════════════════════════════ -->
+  <section class="section">
+    <h2 class="section-title">Food &amp; Drink</h2>
+
+    <div class="filter-pills">
+      <span class="pill active">All</span>
+      <span class="pill">Restaurant</span>
+      <span class="pill">Street Food</span>
+      <span class="pill">Cafe</span>
+      <span class="pill">Bar</span>
+      <span class="pill">Market</span>
+    </div>
+
+    <div class="food-cards">
+      <!-- Food 1 -->
+      <div class="food-card">
+        <div class="food-photo">
+          <div class="gradient-img grad-food-1"></div>
+        </div>
+        <div class="food-info">
+          <div class="food-name">Warung Babi Guling Ibu Oka</div>
+          <div class="food-tags">
+            <span class="food-tag">Local</span>
+            <span class="food-tag-dot"></span>
+            <span class="food-tag">$</span>
+          </div>
+          <div class="food-rec">Order the babi guling -- Bali's signature roast pork.</div>
+        </div>
+      </div>
+
+      <!-- Food 2 -->
+      <div class="food-card">
+        <div class="food-photo">
+          <div class="gradient-img grad-food-2"></div>
+        </div>
+        <div class="food-info">
+          <div class="food-name">Locavore</div>
+          <div class="food-tags">
+            <span class="food-tag">Fine Dining</span>
+            <span class="food-tag-dot"></span>
+            <span class="food-tag">$$$</span>
+          </div>
+          <div class="food-rec">Tasting menu with foraged Indonesian ingredients.</div>
+        </div>
+      </div>
+
+      <!-- Food 3 -->
+      <div class="food-card">
+        <div class="food-photo">
+          <div class="gradient-img grad-food-3"></div>
+        </div>
+        <div class="food-info">
+          <div class="food-name">Sisterfields</div>
+          <div class="food-tags">
+            <span class="food-tag">Cafe</span>
+            <span class="food-tag-dot"></span>
+            <span class="food-tag">$$</span>
+          </div>
+          <div class="food-rec">Best brunch in Seminyak. The acai bowl is legendary.</div>
+        </div>
+      </div>
+
+      <!-- Food 4 -->
+      <div class="food-card">
+        <div class="food-photo">
+          <div class="gradient-img grad-food-4"></div>
+        </div>
+        <div class="food-info">
+          <div class="food-name">Gianyar Night Market</div>
+          <div class="food-tags">
+            <span class="food-tag">Street Food</span>
+            <span class="food-tag-dot"></span>
+            <span class="food-tag">$</span>
+          </div>
+          <div class="food-rec">Locals-only market. Try the sate lilit and lawar.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       10. FLOATING CTA
+       ═══════════════════════════════════════ -->
+  <div class="floating-cta" id="floatingCta">
+    <button>
+      <i data-lucide="map" style="width:18px;height:18px;"></i>
+      Start Planning
+    </button>
+  </div>
+
+  <div class="bottom-spacer"></div>
+
+</div><!-- /device-frame -->
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Lucide icons
+  lucide.createIcons();
+
+  const frame = document.getElementById('deviceFrame');
+  const heroBg = document.getElementById('heroBg');
+  const stickyHeader = document.getElementById('stickyHeader');
+  const heroSection = document.getElementById('heroSection');
+
+  // ── Parallax Effect on Hero ──
+  let ticking = false;
+
+  frame.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = frame.scrollTop;
+        const heroHeight = heroSection.offsetHeight;
+
+        // Parallax: hero background moves at 40% scroll speed
+        if (scrollY < heroHeight + 100) {
+          heroBg.style.transform = `translateY(${scrollY * 0.4}px) scale(1.05)`;
+        }
+
+        // Sticky header visibility
+        if (scrollY > heroHeight - 60) {
+          stickyHeader.classList.add('visible');
+        } else {
+          stickyHeader.classList.remove('visible');
+        }
+
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // ── Filter Pills Interaction ──
+  document.querySelectorAll('.filter-pills').forEach(container => {
+    container.addEventListener('click', (e) => {
+      const pill = e.target.closest('.pill');
+      if (!pill) return;
+      container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+
+  // ── Intersection Observer for Scroll Animations ──
+  const observerOptions = {
+    root: frame,
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
+  };
+
+  const animateObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.section').forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 500ms ease, transform 500ms ease';
+    animateObserver.observe(section);
+  });
+
+  // ── Card Press Effect ──
+  document.querySelectorAll('.flight-card, .stay-card, .activity-card, .food-card, .stat-chip').forEach(card => {
+    card.addEventListener('touchstart', () => {
+      card.style.transform = 'scale(0.97)';
+    }, { passive: true });
+    card.addEventListener('touchend', () => {
+      card.style.transform = 'scale(1)';
+    }, { passive: true });
+    card.addEventListener('touchcancel', () => {
+      card.style.transform = 'scale(1)';
+    }, { passive: true });
+  });
+});
+</script>
+
+</body>
+</html>

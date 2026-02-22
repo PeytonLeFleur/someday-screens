@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Someday — Road Trip to Yellowstone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+    --color-warning: #E8A838;
+    --color-success: #3A9E8F;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+  }
+
+  body {
+    font-family: 'Satoshi', 'SF Pro', 'Roboto', system-ui, sans-serif;
+    background: #E8E4DE;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 24px 0;
+  }
+
+  /* Device Frame */
+  .device-frame {
+    width: 390px;
+    min-height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2), inset 0 0 0 2px rgba(0,0,0,0.1);
+  }
+
+  /* Status Bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 8px;
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .status-bar-light { color: var(--color-text); }
+  .status-bar-dark { color: #F5F5F5; }
+  .status-bar .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* Heading Font */
+  h1,h2,h3,h4,.heading-font {
+    font-family: 'General Sans', system-ui, sans-serif;
+  }
+
+  /* View Mode Toggle */
+  .view-toggle {
+    display: flex;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 3px;
+    margin: 0 20px 16px;
+  }
+  .view-toggle button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    background: transparent;
+    color: var(--color-text-secondary);
+  }
+  .view-toggle button.active {
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  /* ========== PLANNER VIEW ========== */
+  #planner-view {
+    background: var(--color-background);
+  }
+  #planner-view .status-bar { background: var(--color-background); }
+
+  .planner-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 20px 12px;
+  }
+  .planner-header .back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+    flex-shrink: 0;
+  }
+  .planner-header .back-btn:active {
+    transform: scale(0.95);
+    background: var(--color-border);
+  }
+  .planner-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 28px;
+  }
+
+  .planner-scroll {
+    padding: 0 20px 120px;
+    overflow-y: auto;
+    max-height: 680px;
+  }
+
+  .section-gap { margin-bottom: 20px; }
+
+  /* Comparison Card */
+  .comparison-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .comparison-columns {
+    display: flex;
+  }
+  .comparison-col {
+    flex: 1;
+    padding: 16px;
+  }
+  .comparison-col.drive-col {
+    background: var(--color-surface);
+  }
+  .comparison-col.fly-col {
+    background: #FDF6EC;
+  }
+  .comparison-col .col-label {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .drive-col .col-label { color: var(--color-secondary); }
+  .fly-col .col-label { color: var(--color-primary); }
+
+  .comparison-stat {
+    margin-bottom: 10px;
+  }
+  .comparison-stat .stat-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-bottom: 2px;
+  }
+  .comparison-stat .stat-value {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-text);
+  }
+  .comparison-stat .stat-value.large {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .comparison-divider {
+    width: 1px;
+    background: var(--color-border);
+  }
+
+  .comparison-total {
+    border-top: 1px solid var(--color-border);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .comparison-total .total-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+  .comparison-total .total-value {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .drive-total .total-value { color: var(--color-visited); }
+  .fly-total .total-value { color: var(--color-primary); }
+
+  .verdict {
+    padding: 12px 16px;
+    background: #F0FAF8;
+    border-top: 1px solid #D4EDE8;
+    font-size: 13px;
+    color: var(--color-secondary);
+    line-height: 18px;
+  }
+  .verdict strong { color: var(--color-visited); }
+
+  /* Vehicle Card */
+  .vehicle-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .vehicle-icon {
+    width: 44px;
+    height: 44px;
+    background: #F0EDE8;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-secondary);
+  }
+  .vehicle-info { flex: 1; }
+  .vehicle-info .vehicle-name {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+  }
+  .vehicle-info .vehicle-mpg {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+  .vehicle-edit {
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+  .vehicle-edit:active { background: var(--color-border); }
+
+  /* Route Overview */
+  .route-section { margin-bottom: 20px; }
+  .section-title {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .route-map-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 20px 16px 16px;
+    overflow: hidden;
+  }
+
+  .route-svg-container {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 8px;
+  }
+  .route-svg-container svg { width: 100%; height: 100%; }
+
+  .route-stops {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding-top: 4px;
+  }
+  .route-stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+    max-width: 72px;
+  }
+  .route-stop .stop-name {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--color-text);
+    text-align: center;
+    line-height: 13px;
+    margin-top: 4px;
+  }
+  .route-stop .stop-name.endpoint {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  .route-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding-top: 2px;
+  }
+  .route-segment .segment-time {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    background: var(--color-background);
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+  }
+
+  /* Overnight Card */
+  .overnight-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--color-cta);
+  }
+  .overnight-card .overnight-suggestion {
+    font-size: 13px;
+    color: var(--color-text);
+    line-height: 18px;
+    margin-bottom: 8px;
+  }
+  .overnight-card .overnight-hotel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FDF8F0;
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .overnight-hotel .hotel-info .hotel-name {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text);
+  }
+  .overnight-hotel .hotel-info .hotel-price {
+    font-size: 12px;
+    color: var(--color-visited);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .overnight-hotel .book-btn {
+    padding: 8px 16px;
+    background: var(--color-cta);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+  .overnight-hotel .book-btn:active { transform: scale(0.96); opacity: 0.9; }
+
+  /* Scenic Toggle */
+  .scenic-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .scenic-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .scenic-row .scenic-label {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+  }
+  .scenic-row .scenic-extra {
+    font-size: 12px;
+    color: var(--color-accent-coral);
+    font-weight: 600;
+  }
+  .scenic-description {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 17px;
+    padding-right: 50px;
+  }
+  /* Toggle Switch */
+  .toggle-switch {
+    width: 48px;
+    height: 28px;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    position: relative;
+    cursor: pointer;
+    transition: background 200ms ease;
+    flex-shrink: 0;
+    border: none;
+  }
+  .toggle-switch.active { background: var(--color-visited); }
+  .toggle-switch .toggle-knob {
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 200ms ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle-switch.active .toggle-knob { transform: translateX(20px); }
+
+  /* Gas Breakdown */
+  .gas-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .gas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .gas-header .gas-title {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+  }
+  .gas-header .gas-total {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--color-primary);
+  }
+  .gas-segments { margin-bottom: 14px; }
+  .gas-segment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #F5F2ED;
+  }
+  .gas-segment:last-child { border-bottom: none; }
+  .gas-segment .seg-route {
+    font-size: 12px;
+    color: var(--color-text);
+    font-weight: 500;
+    flex: 1;
+  }
+  .gas-segment .seg-price {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    min-width: 65px;
+    text-align: center;
+  }
+  .gas-segment .seg-cost {
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text);
+    min-width: 45px;
+    text-align: right;
+  }
+
+  .gas-chart {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 50px;
+    padding-top: 8px;
+  }
+  .gas-bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .gas-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: height 600ms ease;
+  }
+  .gas-bar-label {
+    font-size: 9px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Start Button */
+  .start-btn-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 16px));
+    background: linear-gradient(transparent, var(--color-background) 30%);
+  }
+  .start-btn {
+    width: 100%;
+    padding: 16px 28px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 52px;
+  }
+  .start-btn:active { transform: scale(0.97); opacity: 0.9; }
+
+  /* ========== DRIVING VIEW (DARK MODE) ========== */
+  #driving-view {
+    display: none;
+    background: #0F1117;
+    min-height: 844px;
+  }
+  #driving-view .status-bar {
+    background: #0F1117;
+    color: #F5F5F5;
+  }
+
+  .driving-scroll {
+    padding: 0 20px 120px;
+  }
+
+  /* Progress Bar */
+  .progress-section {
+    margin-bottom: 28px;
+    padding: 0 0 0;
+  }
+  .progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-driven {
+    font-size: 18px;
+    color: #F5F5F5;
+    font-weight: 500;
+  }
+  .progress-driven span { color: #A0A0A0; }
+  .progress-eta {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--color-visited);
+  }
+  .progress-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #2A2A2E;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-visited), #5BC4B5);
+    border-radius: var(--radius-full);
+    width: 0%;
+    transition: width 1.2s ease;
+  }
+  .progress-miles {
+    font-size: 14px;
+    color: #A0A0A0;
+    text-align: center;
+  }
+
+  /* Driving Cards */
+  .driving-card {
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* Next Stop Card */
+  .next-stop-card {
+    background: #1E1E24;
+    border: 1px solid #3A3A3E;
+    text-align: center;
+    padding: 28px 20px;
+  }
+  .next-stop-label {
+    font-size: 14px;
+    color: #A0A0A0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .next-stop-city {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 28px;
+    color: #F5F5F5;
+    margin-bottom: 12px;
+  }
+  .next-stop-details {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  .next-stop-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    color: var(--color-visited);
+    font-weight: 600;
+    font-family: 'General Sans', system-ui;
+  }
+  .next-stop-stat i { color: #A0A0A0; }
+
+  /* POI Alert Card */
+  .poi-alert-card {
+    background: #1E1E24;
+    border: 1px solid var(--color-cta);
+    border-left: 4px solid var(--color-cta);
+  }
+  .alert-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .alert-badge {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .alert-badge.scenic {
+    background: rgba(212,168,67,0.15);
+    color: var(--color-cta);
+  }
+  .alert-badge.fuel {
+    background: rgba(232,133,108,0.15);
+    color: var(--color-accent-coral);
+  }
+  .alert-distance {
+    font-size: 18px;
+    color: #A0A0A0;
+    font-weight: 500;
+  }
+  .alert-title {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 20px;
+    color: #F5F5F5;
+    margin-bottom: 4px;
+  }
+  .alert-subtitle {
+    font-size: 16px;
+    color: #A0A0A0;
+    margin-bottom: 16px;
+  }
+  .alert-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .alert-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: none;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .alert-btn:active { transform: scale(0.96); }
+  .alert-btn.primary {
+    background: var(--color-cta);
+    color: white;
+  }
+  .alert-btn.secondary {
+    background: #2A2A2E;
+    color: #A0A0A0;
+    border: 1px solid #3A3A3E;
+  }
+
+  /* Gas Alert Card */
+  .gas-alert-card {
+    background: #1E1E24;
+    border: 1px solid var(--color-accent-coral);
+    border-left: 4px solid var(--color-accent-coral);
+  }
+  .gas-alert-station {
+    background: #252528;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gas-station-name {
+    font-size: 18px;
+    color: #F5F5F5;
+    font-weight: 600;
+  }
+  .gas-station-details {
+    font-size: 14px;
+    color: #A0A0A0;
+    margin-top: 2px;
+  }
+  .gas-station-price {
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--color-visited);
+    margin-left: auto;
+  }
+  .navigate-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--color-accent-coral);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 200ms ease;
+  }
+  .navigate-btn:active { transform: scale(0.96); }
+
+  /* Bottom Controls */
+  .driving-bottom-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 16px));
+    background: linear-gradient(transparent, #0F1117 30%);
+  }
+  .main-navigate-btn {
+    width: 100%;
+    padding: 18px 28px;
+    background: var(--color-visited);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: 'General Sans', system-ui;
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 200ms ease;
+    margin-bottom: 10px;
+  }
+  .main-navigate-btn:active { transform: scale(0.96); }
+  .end-trip-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    color: #A0A0A0;
+    font-family: 'General Sans', system-ui;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    min-height: 48px;
+    transition: color 200ms ease;
+  }
+  .end-trip-btn:active { color: var(--color-accent-coral); }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    animation: fadeInUp 400ms ease forwards;
+    opacity: 0;
+  }
+  .delay-1 { animation-delay: 100ms; }
+  .delay-2 { animation-delay: 200ms; }
+  .delay-3 { animation-delay: 300ms; }
+  .delay-4 { animation-delay: 400ms; }
+  .delay-5 { animation-delay: 500ms; }
+  .delay-6 { animation-delay: 600ms; }
+  .delay-7 { animation-delay: 700ms; }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes slideRoute {
+    from { stroke-dashoffset: 600; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+  <!-- ========== PLANNER VIEW ========== -->
+  <div id="planner-view">
+    <!-- Status Bar -->
+    <div class="status-bar status-bar-light">
+      <span>9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1A1E"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1A1E"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1A1A1E"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" fill="#1A1A1E" opacity="0.3"/></svg>
+        <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3C9.8 3 11.9 4 13.4 5.6L15 4C13.1 2 10.4 0.8 7.5 0.8S1.9 2 0 4l1.6 1.6C3.1 4 5.2 3 7.5 3z" fill="#1A1A1E"/><path d="M7.5 6.5c1.5 0 2.9.6 3.9 1.6L13 6.5c-1.4-1.4-3.4-2.2-5.5-2.2S3.9 5.1 2.5 6.5L4.1 8.1c1-.9 2.4-1.6 3.4-1.6z" fill="#1A1A1E"/><circle cx="7.5" cy="10.5" r="1.5" fill="#1A1A1E"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1A1E" stroke-width="1"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="#1A1A1E" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1A1E"/></svg>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="planner-header animate-in">
+      <button class="back-btn" aria-label="Go back">
+        <i data-lucide="chevron-left" style="width:20px;height:20px;color:var(--color-text)"></i>
+      </button>
+      <h1>Road Trip to Yellowstone</h1>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="view-toggle animate-in delay-1">
+      <button class="active" onclick="showView('planner')">Planner</button>
+      <button onclick="showView('driving')">Driving Mode</button>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="planner-scroll">
+
+      <!-- Drive vs Fly Comparison -->
+      <div class="comparison-card animate-in delay-1">
+        <div class="comparison-columns">
+          <div class="comparison-col drive-col">
+            <div class="col-label">
+              <i data-lucide="car" style="width:14px;height:14px"></i>
+              DRIVE
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label">Distance</div>
+              <div class="stat-value">1,247 miles</div>
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label">Drive time</div>
+              <div class="stat-value">18h 30m</div>
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label">Gas</div>
+              <div class="stat-value">$142</div>
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label">Tolls</div>
+              <div class="stat-value">$23</div>
+            </div>
+            <div class="comparison-stat" style="margin-bottom:4px">
+              <div class="stat-label">Per person (3)</div>
+              <div class="stat-value large" style="color:var(--color-visited)">$55</div>
+            </div>
+          </div>
+          <div class="comparison-divider"></div>
+          <div class="comparison-col fly-col">
+            <div class="col-label">
+              <i data-lucide="plane" style="width:14px;height:14px"></i>
+              FLY
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label">Per person</div>
+              <div class="stat-value">$387</div>
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label">Flight time</div>
+              <div class="stat-value">4h 20m</div>
+            </div>
+            <div class="comparison-stat">
+              <div class="stat-label" style="opacity:0.5">+ airport time</div>
+              <div class="stat-value" style="color:var(--color-text-secondary);font-size:13px">~2h each way</div>
+            </div>
+            <div class="comparison-stat" style="margin-bottom:4px;margin-top:auto">
+              <div class="stat-label">Total (3 people)</div>
+              <div class="stat-value large" style="color:var(--color-primary)">$1,161</div>
+            </div>
+          </div>
+        </div>
+        <div class="verdict">
+          <i data-lucide="lightbulb" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;color:var(--color-cta)"></i>
+          Driving saves <strong>$996</strong> for your group of 3, but adds 14 hours.
+        </div>
+      </div>
+
+      <!-- Vehicle Profile -->
+      <div class="vehicle-card animate-in delay-2">
+        <div class="vehicle-icon">
+          <i data-lucide="car" style="width:22px;height:22px"></i>
+        </div>
+        <div class="vehicle-info">
+          <div class="vehicle-name">2021 Toyota RAV4 Hybrid</div>
+          <div class="vehicle-mpg">40 MPG combined</div>
+        </div>
+        <button class="vehicle-edit">Edit</button>
+      </div>
+
+      <!-- Route Overview -->
+      <div class="route-section animate-in delay-3">
+        <div class="section-title">Route Overview</div>
+        <div class="route-map-card">
+          <!-- SVG Route -->
+          <div class="route-svg-container">
+            <svg viewBox="0 0 320 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Route line bg -->
+              <path d="M 20 50 C 60 15, 100 60, 160 30 C 220 0, 260 55, 300 35" stroke="#E8E4DE" stroke-width="3" stroke-linecap="round" fill="none"/>
+              <!-- Route line colored -->
+              <path d="M 20 50 C 60 15, 100 60, 160 30 C 220 0, 260 55, 300 35" stroke="url(#routeGradient)" stroke-width="3" stroke-linecap="round" fill="none"
+                stroke-dasharray="600" stroke-dashoffset="600" class="route-path"/>
+              <!-- Gradient -->
+              <defs>
+                <linearGradient id="routeGradient" x1="20" y1="40" x2="300" y2="40" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#C4704B"/>
+                  <stop offset="50%" stop-color="#D4A843"/>
+                  <stop offset="100%" stop-color="#3A9E8F"/>
+                </linearGradient>
+              </defs>
+              <!-- Waypoint dots -->
+              <circle cx="20" cy="50" r="6" fill="#C4704B"/>
+              <circle cx="20" cy="50" r="3" fill="white"/>
+              <circle cx="100" cy="42" r="5" fill="#D4A843"/>
+              <circle cx="100" cy="42" r="2.5" fill="white"/>
+              <circle cx="170" cy="25" r="5" fill="#D4A843"/>
+              <circle cx="170" cy="25" r="2.5" fill="white"/>
+              <circle cx="240" cy="32" r="5" fill="#D4A843"/>
+              <circle cx="240" cy="32" r="2.5" fill="white"/>
+              <circle cx="300" cy="35" r="6" fill="#3A9E8F"/>
+              <circle cx="300" cy="35" r="3" fill="white"/>
+            </svg>
+          </div>
+          <!-- Stop Labels -->
+          <div class="route-stops">
+            <div class="route-stop">
+              <div class="stop-name endpoint">Des Moines</div>
+            </div>
+            <div class="route-segment"><span class="segment-time">2.5h</span></div>
+            <div class="route-stop">
+              <div class="stop-name">Omaha</div>
+            </div>
+            <div class="route-segment"><span class="segment-time">3h</span></div>
+            <div class="route-stop">
+              <div class="stop-name">North Platte</div>
+            </div>
+            <div class="route-segment"><span class="segment-time">4h</span></div>
+            <div class="route-stop">
+              <div class="stop-name">Casper</div>
+            </div>
+            <div class="route-segment"><span class="segment-time">4.5h</span></div>
+            <div class="route-stop">
+              <div class="stop-name endpoint">Yellowstone</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overnight Stop -->
+      <div class="overnight-card animate-in delay-4">
+        <div class="overnight-suggestion">
+          <i data-lucide="moon" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;color:var(--color-cta)"></i>
+          Split the drive with an overnight in <strong>North Platte, NE</strong>
+        </div>
+        <div class="overnight-hotel">
+          <div class="hotel-info">
+            <div class="hotel-name">Holiday Inn Express</div>
+            <div class="hotel-price">$89/night</div>
+          </div>
+          <button class="book-btn">Book</button>
+        </div>
+      </div>
+
+      <!-- Scenic Route Toggle -->
+      <div class="scenic-card animate-in delay-5">
+        <div class="scenic-row">
+          <div>
+            <div class="scenic-label">Scenic Route</div>
+            <span class="scenic-extra">+2.5 hours</span>
+          </div>
+          <button class="toggle-switch" id="scenicToggle" onclick="toggleScenic()" aria-label="Toggle scenic route">
+            <div class="toggle-knob"></div>
+          </button>
+        </div>
+        <div class="scenic-description">Passes through Badlands National Park &amp; Black Hills</div>
+      </div>
+
+      <!-- Gas Cost Breakdown -->
+      <div class="gas-card animate-in delay-6">
+        <div class="gas-header">
+          <div class="gas-title">
+            <i data-lucide="fuel" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;color:var(--color-accent-coral)"></i>
+            Gas Breakdown
+          </div>
+          <div class="gas-total">$142</div>
+        </div>
+        <div class="gas-segments">
+          <div class="gas-segment">
+            <span class="seg-route">Des Moines <span style="color:var(--color-text-secondary)">&rarr;</span> Omaha</span>
+            <span class="seg-price">$3.19/gal (IA)</span>
+            <span class="seg-cost">$24</span>
+          </div>
+          <div class="gas-segment">
+            <span class="seg-route">Omaha <span style="color:var(--color-text-secondary)">&rarr;</span> N. Platte</span>
+            <span class="seg-price">$3.09/gal (NE)</span>
+            <span class="seg-cost">$34</span>
+          </div>
+          <div class="gas-segment">
+            <span class="seg-route">N. Platte <span style="color:var(--color-text-secondary)">&rarr;</span> Casper</span>
+            <span class="seg-price">$3.39/gal (WY)</span>
+            <span class="seg-cost">$48</span>
+          </div>
+          <div class="gas-segment">
+            <span class="seg-route">Casper <span style="color:var(--color-text-secondary)">&rarr;</span> Yellowstone</span>
+            <span class="seg-price">$3.49/gal (WY)</span>
+            <span class="seg-cost">$36</span>
+          </div>
+        </div>
+        <div class="gas-chart">
+          <div class="gas-bar-group">
+            <div class="gas-bar" style="height:28px;background:var(--color-primary);opacity:0.6"></div>
+            <span class="gas-bar-label">IA</span>
+          </div>
+          <div class="gas-bar-group">
+            <div class="gas-bar" style="height:38px;background:var(--color-primary);opacity:0.75"></div>
+            <span class="gas-bar-label">NE</span>
+          </div>
+          <div class="gas-bar-group">
+            <div class="gas-bar" style="height:50px;background:var(--color-primary);opacity:0.9"></div>
+            <span class="gas-bar-label">WY(1)</span>
+          </div>
+          <div class="gas-bar-group">
+            <div class="gas-bar" style="height:40px;background:var(--color-primary)"></div>
+            <span class="gas-bar-label">WY(2)</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end planner-scroll -->
+
+    <!-- Fixed Start Button -->
+    <div class="start-btn-container">
+      <button class="start-btn" onclick="showView('driving')">
+        <i data-lucide="navigation" style="width:20px;height:20px"></i>
+        Start Road Trip
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== DRIVING VIEW (DARK MODE) ========== -->
+  <div id="driving-view">
+    <!-- Status Bar -->
+    <div class="status-bar status-bar-dark">
+      <span>2:42 PM</span>
+      <div class="status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#F5F5F5"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#F5F5F5"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#F5F5F5"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" fill="#F5F5F5" opacity="0.3"/></svg>
+        <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3C9.8 3 11.9 4 13.4 5.6L15 4C13.1 2 10.4 0.8 7.5 0.8S1.9 2 0 4l1.6 1.6C3.1 4 5.2 3 7.5 3z" fill="#F5F5F5"/><path d="M7.5 6.5c1.5 0 2.9.6 3.9 1.6L13 6.5c-1.4-1.4-3.4-2.2-5.5-2.2S3.9 5.1 2.5 6.5L4.1 8.1c1-.9 2.4-1.6 3.4-1.6z" fill="#F5F5F5"/><circle cx="7.5" cy="10.5" r="1.5" fill="#F5F5F5"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#F5F5F5" stroke-width="1"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="#F5F5F5" opacity="0.4"/><rect x="1.5" y="2.5" width="10" height="7" rx="1" fill="#F5F5F5"/></svg>
+      </div>
+    </div>
+
+    <!-- View Toggle (dark) -->
+    <div class="view-toggle" style="background:#2A2A2E;margin-top:4px">
+      <button style="color:#A0A0A0" onclick="showView('planner')">Planner</button>
+      <button class="active" style="background:#3A3A3E;color:#F5F5F5" onclick="showView('driving')">Driving Mode</button>
+    </div>
+
+    <div class="driving-scroll">
+
+      <!-- Progress Section -->
+      <div class="progress-section animate-in">
+        <div class="progress-stats">
+          <div class="progress-driven">ETA <span style="font-size:14px">arrival</span></div>
+          <div class="progress-eta">5:30 PM</div>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-miles">502 mi driven &middot; 745 mi remaining</div>
+      </div>
+
+      <!-- Next Stop Card -->
+      <div class="driving-card next-stop-card animate-in delay-1">
+        <div class="next-stop-label">Next Stop</div>
+        <div class="next-stop-city">North Platte, NE</div>
+        <div class="next-stop-details">
+          <div class="next-stop-stat">
+            <i data-lucide="map-pin" style="width:18px;height:18px;color:#A0A0A0"></i>
+            124 mi
+          </div>
+          <div class="next-stop-stat">
+            <i data-lucide="clock" style="width:18px;height:18px;color:#A0A0A0"></i>
+            1h 48m
+          </div>
+        </div>
+      </div>
+
+      <!-- POI Alert -->
+      <div class="driving-card poi-alert-card animate-in delay-2">
+        <div class="alert-header">
+          <span class="alert-badge scenic">Scenic</span>
+          <span class="alert-distance">3 miles ahead</span>
+        </div>
+        <div class="alert-title">Scenic Overlook</div>
+        <div class="alert-subtitle">Platte River Valley Viewpoint</div>
+        <div class="alert-actions">
+          <button class="alert-btn primary">
+            <i data-lucide="map-pin" style="width:18px;height:18px"></i>
+            Stop
+          </button>
+          <button class="alert-btn secondary">Skip</button>
+        </div>
+      </div>
+
+      <!-- Gas Alert -->
+      <div class="driving-card gas-alert-card animate-in delay-3">
+        <div class="alert-header">
+          <span class="alert-badge fuel">Fuel</span>
+          <span class="alert-distance">Low fuel in ~45 mi</span>
+        </div>
+        <div class="alert-title">Cheapest Nearby</div>
+        <div class="gas-alert-station">
+          <div>
+            <div class="gas-station-name">Casey's</div>
+            <div class="gas-station-details">2 miles ahead</div>
+          </div>
+          <div class="gas-station-price">$3.29<span style="font-size:14px;font-weight:500;color:#A0A0A0">/gal</span></div>
+        </div>
+        <button class="navigate-btn">
+          <i data-lucide="navigation" style="width:18px;height:18px"></i>
+          Navigate
+        </button>
+      </div>
+
+    </div><!-- end driving-scroll -->
+
+    <!-- Bottom Controls -->
+    <div class="driving-bottom-controls">
+      <button class="main-navigate-btn" onclick="openMaps()">
+        <i data-lucide="navigation" style="width:22px;height:22px"></i>
+        Navigate in Maps
+      </button>
+      <button class="end-trip-btn" onclick="showView('planner')">End Trip</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize Lucide icons
+  lucide.createIcons();
+
+  // View switching
+  function showView(view) {
+    const plannerView = document.getElementById('planner-view');
+    const drivingView = document.getElementById('driving-view');
+
+    if (view === 'planner') {
+      plannerView.style.display = 'block';
+      drivingView.style.display = 'none';
+      // Re-trigger planner animations
+      animateRouteIn();
+    } else {
+      plannerView.style.display = 'none';
+      drivingView.style.display = 'block';
+      // Re-init icons for the driving view
+      lucide.createIcons();
+      // Animate progress bar
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const fill = document.getElementById('progressFill');
+          if (fill) fill.style.width = '40%';
+        });
+      });
+      // Re-trigger driving animations
+      drivingView.querySelectorAll('.animate-in').forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight; // force reflow
+        el.style.animation = '';
+      });
+    }
+  }
+
+  // Scenic route toggle
+  function toggleScenic() {
+    const toggle = document.getElementById('scenicToggle');
+    toggle.classList.toggle('active');
+  }
+
+  // Route path animation
+  function animateRouteIn() {
+    const routePath = document.querySelector('.route-path');
+    if (routePath) {
+      routePath.style.strokeDashoffset = '600';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          routePath.style.transition = 'stroke-dashoffset 1.5s ease';
+          routePath.style.strokeDashoffset = '0';
+        });
+      });
+    }
+  }
+
+  // Open maps deep link
+  function openMaps() {
+    // Try Apple Maps first (iOS), fall back to Google Maps
+    const destination = 'Yellowstone+National+Park';
+    const appleMapsUrl = 'maps://maps.apple.com/?daddr=' + destination + '&dirflg=d';
+    const googleMapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + destination + '&travelmode=driving';
+
+    // Attempt Apple Maps, with fallback
+    const start = Date.now();
+    window.location.href = appleMapsUrl;
+    setTimeout(function() {
+      if (Date.now() - start < 1600) {
+        window.open(googleMapsUrl, '_blank');
+      }
+    }, 1500);
+  }
+
+  // Initialize on load
+  window.addEventListener('DOMContentLoaded', function() {
+    // Animate route path
+    setTimeout(animateRouteIn, 800);
+
+    // Animate gas bars
+    document.querySelectorAll('.gas-bar').forEach((bar, i) => {
+      const targetHeight = bar.style.height;
+      bar.style.height = '0px';
+      setTimeout(() => {
+        bar.style.transition = 'height 600ms ease';
+        bar.style.height = targetHeight;
+      }, 800 + (i * 100));
+    });
+  });
+</script>
+</body>
+</html>

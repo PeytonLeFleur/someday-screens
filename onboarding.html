@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Someday — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --color-primary: #C4704B;
+  --color-secondary: #1B3A4B;
+  --color-cta: #D4A843;
+  --color-accent-coral: #E8856C;
+  --color-visited: #3A9E8F;
+  --color-background: #FAF7F2;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A1E;
+  --color-text-secondary: #6B6B6B;
+  --color-border: #E8E4DE;
+  --color-error: #D64545;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-elevated: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-pressed: 0 1px 4px rgba(0,0,0,0.06);
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background: #1a1a1e;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* ============================================================
+   DEVICE FRAME
+   ============================================================ */
+.device-frame {
+  position: relative;
+  width: 390px;
+  height: 844px;
+  margin: 20px auto;
+  border-radius: 44px;
+  overflow: hidden;
+  background: var(--color-background);
+  box-shadow:
+    0 0 0 2px #2a2a2e,
+    0 0 0 6px #1a1a1e,
+    0 0 0 8px #3a3a3e,
+    0 20px 60px rgba(0,0,0,0.5);
+}
+
+/* Status bar */
+.status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px 0;
+  transition: color 200ms ease;
+}
+
+.status-bar.light {
+  color: #fff;
+}
+
+.status-bar.dark {
+  color: var(--color-text);
+}
+
+.status-bar-time {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+
+.status-bar-icons {
+  position: absolute;
+  right: 28px;
+  top: 14px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.status-bar-icons svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Notch */
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 34px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  z-index: 101;
+}
+
+/* Home indicator */
+.home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  z-index: 100;
+  transition: background 200ms ease;
+}
+
+.home-indicator.light {
+  background: rgba(255,255,255,0.35);
+}
+
+.home-indicator.dark {
+  background: rgba(0,0,0,0.2);
+}
+
+/* ============================================================
+   SCREEN CONTAINER
+   ============================================================ */
+.screens-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 300ms ease, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.screen.exit-left {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+
+/* ============================================================
+   SCREEN 1: SPLASH
+   ============================================================ */
+.splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.splash-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg,
+      #1B3A4B 0%,
+      #2a5a6b 20%,
+      #C4704B 45%,
+      #E8856C 60%,
+      #D4A843 80%,
+      #1B3A4B 100%
+    );
+  background-size: 400% 400%;
+  animation: splashGradient 12s ease infinite;
+}
+
+.splash-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 30% 20%, rgba(232,133,108,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 60% at 70% 70%, rgba(212,168,67,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 40% at 50% 50%, rgba(27,58,75,0.2) 0%, transparent 60%);
+}
+
+.splash-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+}
+
+@keyframes splashGradient {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+/* Floating light particles */
+.splash-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+
+.particle:nth-child(1) { left: 15%; top: 20%; animation-duration: 8s; animation-delay: 0s; width: 3px; height: 3px; }
+.particle:nth-child(2) { left: 45%; top: 60%; animation-duration: 10s; animation-delay: 1s; width: 5px; height: 5px; }
+.particle:nth-child(3) { left: 75%; top: 30%; animation-duration: 7s; animation-delay: 2s; }
+.particle:nth-child(4) { left: 25%; top: 80%; animation-duration: 9s; animation-delay: 0.5s; width: 3px; height: 3px; }
+.particle:nth-child(5) { left: 85%; top: 70%; animation-duration: 11s; animation-delay: 1.5s; width: 6px; height: 6px; opacity: 0.2; }
+.particle:nth-child(6) { left: 55%; top: 15%; animation-duration: 8.5s; animation-delay: 3s; width: 3px; height: 3px; }
+
+@keyframes float {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  10% { opacity: 0.6; }
+  50% { transform: translateY(-120px) scale(1.2); opacity: 0.3; }
+  100% { transform: translateY(-240px) scale(0.8); opacity: 0; }
+}
+
+.splash-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.splash-logo {
+  font-family: var(--font-heading);
+  font-size: 52px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -1.5px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  animation: logoFadeIn 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+}
+
+.splash-tagline {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  animation: taglineFadeIn 800ms 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+}
+
+.splash-cta {
+  margin-top: 40px;
+  background: #fff;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+  padding: 16px 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  transition: all 200ms ease;
+  animation: ctaFadeIn 600ms 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+  min-height: 48px;
+}
+
+.splash-cta:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-pressed);
+}
+
+@keyframes logoFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes taglineFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ctaFadeIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   SCREEN 2: ACCOUNT CREATION
+   ============================================================ */
+.account-screen {
+  background: var(--color-background);
+  padding: 54px 0 34px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.account-header {
+  padding: 24px 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease;
+  flex-shrink: 0;
+}
+
+.back-btn:active {
+  transform: scale(0.95);
+  box-shadow: var(--shadow-pressed);
+}
+
+.back-btn svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text);
+}
+
+.account-card {
+  margin: 24px 20px 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: 32px 24px;
+  box-shadow: var(--shadow-card);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-card h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 34px;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.account-card .subtitle {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  margin-bottom: 28px;
+  line-height: 22px;
+}
+
+.social-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  border: none;
+  padding: 14px 20px;
+}
+
+.social-btn:active {
+  transform: scale(0.97);
+}
+
+.social-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.social-btn.apple {
+  background: #000;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.social-btn.google {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.divider-text {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-transform: lowercase;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  display: block;
+  font-family: var(--font-heading);
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 16px;
+  background: var(--color-background);
+  color: var(--color-text);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  outline: none;
+}
+
+.form-input::placeholder {
+  color: #b0aca6;
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(196,112,75,0.12);
+  background: var(--color-surface);
+}
+
+.btn-primary {
+  width: 100%;
+  min-height: 52px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 200ms ease;
+  margin-top: 8px;
+  box-shadow: 0 2px 12px rgba(196,112,75,0.25);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-pressed);
+}
+
+.terms-text {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 18px;
+}
+
+.terms-text a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ============================================================
+   SCREEN 3: WHERE'S HOME
+   ============================================================ */
+.home-screen {
+  background: var(--color-background);
+  padding: 54px 0 34px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.screen-header {
+  padding: 20px 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.screen-header .skip-btn {
+  margin-left: auto;
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 200ms ease;
+}
+
+.screen-header .skip-btn:active {
+  color: var(--color-primary);
+}
+
+.screen-content {
+  padding: 24px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen-content h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 34px;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.screen-content .screen-subtitle {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  margin-bottom: 28px;
+  line-height: 22px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.search-input-wrapper svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 16px 16px 48px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  outline: none;
+  box-shadow: var(--shadow-card);
+}
+
+.search-input::placeholder {
+  color: #b0aca6;
+}
+
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(196,112,75,0.12);
+}
+
+.location-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 10px 4px;
+  transition: opacity 200ms ease;
+}
+
+.location-btn:active {
+  opacity: 0.7;
+}
+
+.location-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* World map illustration */
+.world-map-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  position: relative;
+}
+
+.world-map {
+  position: relative;
+  width: 300px;
+  height: 200px;
+}
+
+.map-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+/* Scatter dots to suggest continents */
+.map-dot:nth-child(1) { left: 30%; top: 25%; }
+.map-dot:nth-child(2) { left: 35%; top: 30%; }
+.map-dot:nth-child(3) { left: 28%; top: 35%; }
+.map-dot:nth-child(4) { left: 33%; top: 40%; }
+.map-dot:nth-child(5) { left: 38%; top: 28%; }
+.map-dot:nth-child(6) { left: 45%; top: 22%; }
+.map-dot:nth-child(7) { left: 50%; top: 26%; }
+.map-dot:nth-child(8) { left: 47%; top: 30%; }
+.map-dot:nth-child(9) { left: 52%; top: 34%; }
+.map-dot:nth-child(10) { left: 55%; top: 28%; }
+.map-dot:nth-child(11) { left: 60%; top: 32%; }
+.map-dot:nth-child(12) { left: 58%; top: 38%; }
+.map-dot:nth-child(13) { left: 65%; top: 30%; }
+.map-dot:nth-child(14) { left: 70%; top: 35%; }
+.map-dot:nth-child(15) { left: 72%; top: 42%; }
+.map-dot:nth-child(16) { left: 68%; top: 48%; }
+.map-dot:nth-child(17) { left: 45%; top: 55%; }
+.map-dot:nth-child(18) { left: 48%; top: 60%; }
+.map-dot:nth-child(19) { left: 50%; top: 65%; }
+.map-dot:nth-child(20) { left: 42%; top: 58%; }
+.map-dot:nth-child(21) { left: 22%; top: 42%; }
+.map-dot:nth-child(22) { left: 18%; top: 38%; }
+.map-dot:nth-child(23) { left: 20%; top: 50%; }
+.map-dot:nth-child(24) { left: 25%; top: 55%; }
+.map-dot:nth-child(25) { left: 76%; top: 60%; }
+.map-dot:nth-child(26) { left: 80%; top: 65%; }
+.map-dot:nth-child(27) { left: 78%; top: 70%; }
+
+.map-glow-dot {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 0 16px rgba(196,112,75,0.5);
+}
+
+.map-glow-dot::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(196,112,75,0.3);
+  animation: pinPulse 2s ease-in-out infinite;
+}
+
+@keyframes pinPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Progress indicator */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+}
+
+.progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border);
+  transition: all 300ms ease;
+}
+
+.progress-dot.active {
+  width: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.continue-footer {
+  padding: 0 20px 20px;
+}
+
+/* ============================================================
+   SCREEN 4: TRAVEL STYLE
+   ============================================================ */
+.travel-screen {
+  background: var(--color-background);
+  padding: 54px 0 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.travel-screen h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  color: var(--color-text);
+}
+
+.travel-screen .screen-subtitle {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+  line-height: 22px;
+}
+
+.helper-text {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.travel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+  flex: 1;
+}
+
+.travel-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 1;
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 2.5px solid transparent;
+  box-shadow: var(--shadow-card);
+}
+
+.travel-card:active {
+  transform: scale(0.97);
+}
+
+.travel-card.selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 4px 20px rgba(196,112,75,0.25);
+  transform: scale(1.02);
+}
+
+.travel-card-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.travel-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 30%, rgba(0,0,0,0.65) 100%);
+}
+
+.travel-card-label {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  line-height: 18px;
+}
+
+.travel-card-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.travel-card.selected .travel-card-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.travel-card-check svg {
+  width: 14px;
+  height: 14px;
+  color: #fff;
+}
+
+/* Card background gradients (simulating travel photos) */
+.travel-card[data-style="beach"] .travel-card-bg {
+  background: linear-gradient(135deg, #5BC0EB 0%, #1B8A9E 40%, #E8D5B7 80%, #F2E8D5 100%);
+}
+.travel-card[data-style="mountains"] .travel-card-bg {
+  background: linear-gradient(160deg, #4A6741 0%, #2D4A32 30%, #8B9E82 60%, #D0D8CC 85%, #EAEBE8 100%);
+}
+.travel-card[data-style="city"] .travel-card-bg {
+  background: linear-gradient(150deg, #1B3A4B 0%, #2A4A5B 30%, #C4704B 60%, #E8856C 80%, #D4A843 100%);
+}
+.travel-card[data-style="temples"] .travel-card-bg {
+  background: linear-gradient(140deg, #D4A843 0%, #C4704B 35%, #8B4513 70%, #4A2810 100%);
+}
+.travel-card[data-style="food"] .travel-card-bg {
+  background: linear-gradient(135deg, #E8856C 0%, #C4704B 40%, #D4A843 75%, #F5E6C8 100%);
+}
+.travel-card[data-style="offgrid"] .travel-card-bg {
+  background: linear-gradient(150deg, #1B3A4B 0%, #2D5A3E 35%, #4A8B5C 65%, #7CB68A 100%);
+}
+.travel-card[data-style="adventure"] .travel-card-bg {
+  background: linear-gradient(145deg, #3A3A3E 0%, #5A4A3E 30%, #C4704B 65%, #E8856C 100%);
+}
+.travel-card[data-style="spa"] .travel-card-bg {
+  background: linear-gradient(140deg, #3A9E8F 0%, #5BC0B5 30%, #B8D8D2 60%, #F0F5F3 85%, #FAF7F2 100%);
+}
+
+.travel-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.travel-footer {
+  padding: 12px 20px 20px;
+  background: linear-gradient(transparent, var(--color-background) 30%);
+}
+
+/* ============================================================
+   SCREEN 5: FIRST IMPORT
+   ============================================================ */
+.import-screen {
+  background: var(--color-background);
+  padding: 54px 0 34px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.import-content {
+  padding: 24px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.import-content h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 34px;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.import-content .screen-subtitle {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  margin-bottom: 28px;
+  line-height: 22px;
+}
+
+.paste-field {
+  width: 100%;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  text-align: center;
+}
+
+.paste-field:hover, .paste-field:focus-within {
+  border-color: var(--color-primary);
+  background: rgba(196,112,75,0.03);
+}
+
+.paste-field svg {
+  width: 32px;
+  height: 32px;
+  color: var(--color-primary);
+  opacity: 0.7;
+}
+
+.paste-field .paste-label {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-text);
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.paste-field .paste-hint {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.paste-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-primary);
+  text-align: center;
+  outline: none;
+  margin-top: 4px;
+}
+
+.paste-input::placeholder {
+  color: #b0aca6;
+}
+
+.search-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 15px;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  padding: 8px;
+  transition: opacity 200ms ease;
+}
+
+.search-link:active {
+  opacity: 0.7;
+}
+
+.social-icons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.social-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  transition: all 200ms ease;
+}
+
+.social-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Processing state */
+.processing-state {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 40px 20px;
+}
+
+.processing-state.show {
+  display: flex;
+}
+
+.globe-animation {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.globe-outer {
+  width: 80px;
+  height: 80px;
+  border: 3px solid var(--color-border);
+  border-radius: 50%;
+  position: absolute;
+  inset: 0;
+}
+
+.globe-meridian {
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-left-color: var(--color-primary);
+  border-right-color: var(--color-primary);
+  border-radius: 50%;
+  animation: globeRotate 1.5s linear infinite;
+}
+
+.globe-equator {
+  position: absolute;
+  top: 50%;
+  left: -2px;
+  right: -2px;
+  height: 2px;
+  background: var(--color-border);
+  transform: translateY(-50%);
+}
+
+@keyframes globeRotate {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+.processing-text {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.processing-dots {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.processing-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+.processing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.processing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Success state */
+.success-state {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  flex-direction: column;
+}
+
+.success-state.show {
+  display: flex;
+  animation: successReveal 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes successReveal {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.success-hero {
+  flex: 1;
+  position: relative;
+  background:
+    linear-gradient(160deg,
+      #1B3A4B 0%,
+      #2a6a5b 20%,
+      #3A9E8F 40%,
+      #5BC0EB 60%,
+      #F2E8D5 80%,
+      #E8856C 100%
+    );
+  background-size: 200% 200%;
+  animation: heroShift 8s ease infinite;
+}
+
+@keyframes heroShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.success-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 30%, rgba(0,0,0,0.6) 100%);
+}
+
+.success-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 24px;
+  z-index: 2;
+  text-align: center;
+}
+
+.success-flag {
+  font-size: 40px;
+  margin-bottom: 12px;
+  display: block;
+  line-height: 1;
+}
+
+.success-destination {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 42px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  margin-bottom: 8px;
+}
+
+.success-country {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 32px;
+}
+
+.btn-cta {
+  width: 100%;
+  min-height: 52px;
+  background: var(--color-cta);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 200ms ease;
+  box-shadow: 0 4px 20px rgba(212,168,67,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cta:active {
+  transform: scale(0.97);
+}
+
+.btn-cta svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Import initial content (hidden during processing/success) */
+.import-initial {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.import-initial.hidden {
+  display: none;
+}
+
+/* ============================================================
+   UTILITY & SHARED
+   ============================================================ */
+.screen-title-area {
+  padding: 24px 20px 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+  <!-- Notch -->
+  <div class="notch"></div>
+
+  <!-- Status Bar -->
+  <div class="status-bar light" id="statusBar">
+    <span class="status-bar-time">9:41</span>
+    <div class="status-bar-icons">
+      <svg viewBox="0 0 17 12" fill="currentColor"><path d="M15.5 0h-1c-.28 0-.5.22-.5.5v11c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5V.5c0-.28-.22-.5-.5-.5zm-4 3h-1c-.28 0-.5.22-.5.5v8c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5v-8c0-.28-.22-.5-.5-.5zm-4 3h-1c-.28 0-.5.22-.5.5v5c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5v-5c0-.28-.22-.5-.5-.5zm-4 2.5h-1c-.28 0-.5.22-.5.5v2.5c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5V9c0-.28-.22-.5-.5-.5z"/></svg>
+      <svg viewBox="0 0 16 12" fill="currentColor"><path d="M8 1.6C5.5 1.6 3.3 2.6 1.6 4.2l1.2 1.2C4.2 4 6 3.2 8 3.2s3.8.8 5.2 2.2l1.2-1.2C12.7 2.6 10.5 1.6 8 1.6zM8 5c-1.7 0-3.2.7-4.3 1.8l1.2 1.2C5.7 7.4 6.8 6.8 8 6.8s2.3.6 3.1 1.2l1.2-1.2C11.2 5.7 9.7 5 8 5zm0 3.4c-.9 0-1.8.4-2.4 1l2.4 2.8 2.4-2.8c-.6-.6-1.5-1-2.4-1z"/></svg>
+      <svg viewBox="0 0 25 12" fill="currentColor"><rect x="0" y="1" width="21" height="10" rx="2" ry="2" stroke="currentColor" stroke-width="1" fill="none" opacity="0.4"/><rect x="1.5" y="2.5" width="15" height="7" rx="1" fill="currentColor"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <!-- Home Indicator -->
+  <div class="home-indicator light" id="homeIndicator"></div>
+
+  <!-- Screens Wrapper -->
+  <div class="screens-wrapper">
+
+    <!-- SCREEN 1: SPLASH -->
+    <div class="screen active" id="screen1">
+      <div class="splash">
+        <div class="splash-bg"></div>
+        <div class="splash-particles">
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+        </div>
+        <div class="splash-content">
+          <div class="splash-logo">someday</div>
+          <div class="splash-tagline">Turn someday into a plane ticket.</div>
+          <button class="splash-cta" onclick="goToScreen(2)">Start Exploring</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: ACCOUNT CREATION -->
+    <div class="screen" id="screen2">
+      <div class="account-screen">
+        <div class="account-header">
+          <button class="back-btn" onclick="goToScreen(1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="account-card">
+          <h1>Create your account</h1>
+          <p class="subtitle">Start building your dream travel list</p>
+
+          <!-- Apple Sign In -->
+          <button class="social-btn apple">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.52-3.23 0-1.44.62-2.2.44-3.06-.4C3.79 16.17 4.36 9.02 8.9 8.76c1.23.06 2.09.7 2.81.73.98-.2 1.92-.78 2.97-.71 1.26.1 2.21.6 2.83 1.51-2.59 1.55-1.97 4.96.35 5.92-.47 1.24-1.08 2.47-2.21 3.68l.4-.61zM12.05 8.68c-.13-2.27 1.69-4.14 3.87-4.3.29 2.47-2.17 4.52-3.87 4.3z"/></svg>
+            Continue with Apple
+          </button>
+
+          <!-- Google Sign In -->
+          <button class="social-btn google">
+            <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+
+          <!-- Divider -->
+          <div class="divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">or</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <!-- Email/Password form -->
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" placeholder="At least 8 characters">
+          </div>
+
+          <button class="btn-primary" onclick="goToScreen(3)">Continue</button>
+
+          <p class="terms-text">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: WHERE'S HOME -->
+    <div class="screen" id="screen3">
+      <div class="home-screen">
+        <div class="screen-header">
+          <button class="back-btn" onclick="goToScreen(2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="skip-btn" onclick="goToScreen(4)">Skip</button>
+        </div>
+
+        <div class="screen-content">
+          <h1>Where's home?</h1>
+          <p class="screen-subtitle">We'll personalize flights and deals based on your location.</p>
+
+          <div class="search-input-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" class="search-input" placeholder="Search your city...">
+          </div>
+
+          <button class="location-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg>
+            Use current location
+          </button>
+
+          <!-- World map illustration -->
+          <div class="world-map-container">
+            <div class="world-map">
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-dot"></div><div class="map-dot"></div><div class="map-dot"></div>
+              <div class="map-glow-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress + Continue -->
+        <div class="progress-bar">
+          <div class="progress-dot active"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <div class="continue-footer">
+          <button class="btn-primary" onclick="goToScreen(4)">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: TRAVEL STYLE -->
+    <div class="screen" id="screen4">
+      <div class="travel-screen">
+        <div class="screen-header">
+          <button class="back-btn" onclick="goToScreen(3)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="skip-btn" onclick="goToScreen(5)">Skip</button>
+        </div>
+
+        <div class="screen-title-area">
+          <h1>What kind of traveler are you?</h1>
+          <p class="screen-subtitle">Pick everything that excites you.</p>
+          <p class="helper-text">Select at least 1</p>
+        </div>
+
+        <div class="travel-scroll-area">
+          <div class="travel-grid">
+            <div class="travel-card" data-style="beach" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Beach & Ocean</div>
+            </div>
+
+            <div class="travel-card" data-style="mountains" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Mountains & Trails</div>
+            </div>
+
+            <div class="travel-card" data-style="city" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">City & Nightlife</div>
+            </div>
+
+            <div class="travel-card" data-style="temples" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Temples & Culture</div>
+            </div>
+
+            <div class="travel-card" data-style="food" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Food & Markets</div>
+            </div>
+
+            <div class="travel-card" data-style="offgrid" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Off-Grid & Remote</div>
+            </div>
+
+            <div class="travel-card" data-style="adventure" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Adventure & Extreme</div>
+            </div>
+
+            <div class="travel-card" data-style="spa" onclick="toggleCard(this)">
+              <div class="travel-card-bg"></div>
+              <div class="travel-card-overlay"></div>
+              <div class="travel-card-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="travel-card-label">Spa & Relaxation</div>
+            </div>
+          </div>
+          <!-- Spacer for scroll area -->
+          <div style="height: 16px;"></div>
+        </div>
+
+        <div class="travel-footer">
+          <div class="progress-bar">
+            <div class="progress-dot"></div>
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+          </div>
+          <button class="btn-primary" id="travelContinue" onclick="goToScreen(5)" disabled style="opacity: 0.5;">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: FIRST IMPORT -->
+    <div class="screen" id="screen5">
+      <div class="import-screen">
+        <div class="screen-header">
+          <button class="back-btn" onclick="goToScreen(4)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="skip-btn" onclick="showSuccess()">Skip</button>
+        </div>
+
+        <div class="import-content">
+          <div class="import-initial" id="importInitial">
+            <h1>Import your first dream trip</h1>
+            <p class="screen-subtitle">Paste a link from social media and we'll extract the destination for you.</p>
+
+            <div class="paste-field" onclick="document.getElementById('pasteInput').focus()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <span class="paste-label">Paste an Instagram, TikTok, or YouTube link</span>
+              <span class="paste-hint">We'll do the rest</span>
+              <input type="url" id="pasteInput" class="paste-input" placeholder="https://..." onkeydown="if(event.key==='Enter')startProcessing()">
+            </div>
+
+            <button class="search-link" onclick="startProcessing()">Or search a destination</button>
+
+            <div class="social-icons-row">
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="#E1306C" stroke="none"/></svg>
+              </div>
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" fill="#000"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.88-2.88 2.89 2.89 0 012.88-2.88c.28 0 .56.04.82.12v-3.5a6.37 6.37 0 00-.82-.05A6.34 6.34 0 003.15 15.3a6.34 6.34 0 0010.86 4.48 6.3 6.3 0 001.86-4.48V8.74a8.26 8.26 0 004.84 1.56V6.85a4.85 4.85 0 01-1.12-.16z"/></svg>
+              </div>
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 00.5 6.19 31.72 31.72 0 000 12a31.72 31.72 0 00.5 5.81 3.02 3.02 0 002.12 2.14c1.84.55 9.38.55 9.38.55s7.54 0 9.38-.55a3.02 3.02 0 002.12-2.14A31.72 31.72 0 0024 12a31.72 31.72 0 00-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>
+              </div>
+            </div>
+
+            <!-- Spacer to push progress to bottom -->
+            <div style="flex: 1;"></div>
+
+            <div class="progress-bar">
+              <div class="progress-dot"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-dot active"></div>
+            </div>
+          </div>
+
+          <!-- Processing State -->
+          <div class="processing-state" id="processingState">
+            <div class="globe-animation">
+              <div class="globe-outer"></div>
+              <div class="globe-meridian"></div>
+              <div class="globe-equator"></div>
+            </div>
+            <p class="processing-text">
+              Discovering destination
+              <span class="processing-dots">
+                <span></span><span></span><span></span>
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success State (overlays entire screen) -->
+      <div class="success-state" id="successState">
+        <div class="success-hero">
+          <div class="success-content">
+            <span class="success-flag">
+              <svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="24" fill="#012169"/><clipPath id="flagClip"><circle cx="24" cy="24" r="24"/></clipPath><g clip-path="url(#flagClip)"><path d="M0 0h48v48H0z" fill="#012169"/><path d="M0 0l48 48M48 0L0 48" stroke="#fff" stroke-width="6"/><path d="M0 0l48 48M48 0L0 48" stroke="#C8102E" stroke-width="4"/><path d="M24 0v48M0 24h48" stroke="#fff" stroke-width="10"/><path d="M24 0v48M0 24h48" stroke="#C8102E" stroke-width="6"/></g></svg>
+            </span>
+            <h2 class="success-destination">Bali</h2>
+            <p class="success-country">Indonesia</p>
+            <button class="btn-cta" onclick="alert('Saved! In a real app, this would navigate to the bucket list.')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+              Save to Bucket List
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screens-wrapper -->
+</div><!-- /device-frame -->
+
+<script>
+// ============================================================
+// SCREEN NAVIGATION
+// ============================================================
+let currentScreen = 1;
+const totalScreens = 5;
+
+function goToScreen(targetScreen) {
+  if (targetScreen === currentScreen) return;
+  if (targetScreen < 1 || targetScreen > totalScreens) return;
+
+  const currentEl = document.getElementById('screen' + currentScreen);
+  const targetEl = document.getElementById('screen' + targetScreen);
+
+  const goingForward = targetScreen > currentScreen;
+
+  // Exit current screen
+  currentEl.classList.remove('active');
+  currentEl.classList.add(goingForward ? 'exit-left' : '');
+  if (!goingForward) {
+    currentEl.style.transform = 'translateX(60px)';
+    currentEl.style.opacity = '0';
+  }
+
+  // Prepare target screen entry direction
+  if (goingForward) {
+    targetEl.style.transform = 'translateX(60px)';
+  } else {
+    targetEl.style.transform = 'translateX(-60px)';
+    targetEl.classList.remove('exit-left');
+  }
+  targetEl.style.opacity = '0';
+
+  // Force reflow
+  void targetEl.offsetWidth;
+
+  // Activate target
+  targetEl.classList.add('active');
+  targetEl.style.transform = '';
+  targetEl.style.opacity = '';
+
+  // Update status bar style
+  const statusBar = document.getElementById('statusBar');
+  const homeIndicator = document.getElementById('homeIndicator');
+
+  if (targetScreen === 1) {
+    statusBar.className = 'status-bar light';
+    homeIndicator.className = 'home-indicator light';
+  } else {
+    statusBar.className = 'status-bar dark';
+    homeIndicator.className = 'home-indicator dark';
+  }
+
+  // Reset import screen states when navigating away
+  if (currentScreen === 5 && targetScreen !== 5) {
+    resetImportScreen();
+  }
+
+  // Clean up after transition
+  setTimeout(() => {
+    currentEl.classList.remove('exit-left');
+    currentEl.style.transform = '';
+    currentEl.style.opacity = '';
+  }, 350);
+
+  currentScreen = targetScreen;
+}
+
+// ============================================================
+// TRAVEL CARD SELECTION
+// ============================================================
+function toggleCard(card) {
+  card.classList.toggle('selected');
+
+  // Update continue button state
+  const selectedCount = document.querySelectorAll('.travel-card.selected').length;
+  const continueBtn = document.getElementById('travelContinue');
+
+  if (selectedCount >= 1) {
+    continueBtn.disabled = false;
+    continueBtn.style.opacity = '1';
+  } else {
+    continueBtn.disabled = true;
+    continueBtn.style.opacity = '0.5';
+  }
+}
+
+// ============================================================
+// IMPORT FLOW
+// ============================================================
+function startProcessing() {
+  const initial = document.getElementById('importInitial');
+  const processing = document.getElementById('processingState');
+
+  initial.classList.add('hidden');
+  processing.classList.add('show');
+
+  // After 2.5 seconds, show success
+  setTimeout(() => {
+    showSuccess();
+  }, 2500);
+}
+
+function showSuccess() {
+  const processing = document.getElementById('processingState');
+  const success = document.getElementById('successState');
+
+  processing.classList.remove('show');
+  success.classList.add('show');
+
+  // Update status bar for success overlay
+  const statusBar = document.getElementById('statusBar');
+  const homeIndicator = document.getElementById('homeIndicator');
+  statusBar.className = 'status-bar light';
+  homeIndicator.className = 'home-indicator light';
+}
+
+function resetImportScreen() {
+  const initial = document.getElementById('importInitial');
+  const processing = document.getElementById('processingState');
+  const success = document.getElementById('successState');
+
+  initial.classList.remove('hidden');
+  processing.classList.remove('show');
+  success.classList.remove('show');
+
+  const pasteInput = document.getElementById('pasteInput');
+  if (pasteInput) pasteInput.value = '';
+}
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Set initial screen active state
+  document.getElementById('screen1').classList.add('active');
+
+  // Prevent default form submissions
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', e => e.preventDefault());
+  });
+});
+</script>
+</body>
+</html>

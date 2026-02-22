@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Someday — Import Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  /* ========================================
+     CSS VARIABLES — Someday Design Tokens
+     ======================================== */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+    --color-success: #3A9E8F;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-bottom-sheet: 0 -4px 24px rgba(0,0,0,0.15);
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* ========================================
+     RESET + BASE
+     ======================================== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: #E8E4DE;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
+  /* ========================================
+     DEVICE FRAME
+     ======================================== */
+  .device-frame {
+    width: 390px;
+    height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #1A1A1E,
+      0 0 0 4px #3A3A3E,
+      0 20px 60px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  /* Dynamic Island */
+  .device-frame::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 36px;
+    background: #1A1A1E;
+    border-radius: 20px;
+    z-index: 200;
+  }
+
+  /* ========================================
+     SCREEN
+     ======================================== */
+  .screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-bottom: 100px;
+  }
+
+  .screen::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ========================================
+     STATUS BAR
+     ======================================== */
+  .status-bar {
+    height: 54px;
+    width: 100%;
+    padding: 14px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: linear-gradient(to bottom, var(--color-background) 60%, transparent);
+    pointer-events: none;
+  }
+
+  .status-bar-time {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-text);
+  }
+
+  .status-bar-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .status-bar-icons span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* ========================================
+     PROTOTYPE STATE NAVIGATION
+     ======================================== */
+  .proto-nav {
+    position: absolute;
+    top: 54px;
+    left: 0;
+    right: 0;
+    z-index: 190;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background: rgba(27, 58, 75, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .proto-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 250ms ease;
+    border: none;
+    padding: 0;
+  }
+
+  .proto-dot.active {
+    background: #FFFFFF;
+    width: 24px;
+  }
+
+  .proto-label {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+  .proto-btn {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--radius-full);
+    padding: 4px 12px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: background 200ms ease;
+    min-height: 28px;
+  }
+
+  .proto-btn:hover {
+    background: rgba(255,255,255,0.25);
+  }
+
+  /* ========================================
+     DIMMED OVERLAY
+     ======================================== */
+  .overlay-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  .overlay-dim.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ========================================
+     STATE CONTAINERS
+     ======================================== */
+  .state {
+    display: none;
+  }
+
+  .state.active {
+    display: block;
+  }
+
+  /* ========================================
+     STATE 1: BOTTOM SHEET
+     ======================================== */
+  .bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 85;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 12px var(--space-lg) 100px;
+    box-shadow: var(--shadow-bottom-sheet);
+    transform: translateY(100%);
+    transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .bottom-sheet.visible {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-border);
+    margin: 0 auto 20px;
+  }
+
+  .sheet-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-text);
+    margin-bottom: 24px;
+  }
+
+  .sheet-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .sheet-option:last-child {
+    border-bottom: none;
+  }
+
+  .sheet-option:active {
+    opacity: 0.6;
+  }
+
+  .sheet-option-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  .sheet-option-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sheet-option-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--color-text);
+    margin-bottom: 2px;
+  }
+
+  .sheet-option-desc {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--color-text-secondary);
+  }
+
+  .sheet-option-arrow {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+    opacity: 0.5;
+  }
+
+  /* ========================================
+     STATE 2: PASTE LINK INPUT
+     ======================================== */
+  .paste-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 85;
+    background: var(--color-surface);
+    transform: translateY(100%);
+    transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    overflow-y: auto;
+  }
+
+  .paste-screen.visible {
+    transform: translateY(0);
+  }
+
+  .paste-header {
+    padding: 60px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .paste-back {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-text);
+    transition: background 200ms ease;
+    flex-shrink: 0;
+  }
+
+  .paste-back:active {
+    background: var(--color-border);
+  }
+
+  .paste-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-text);
+  }
+
+  .paste-content {
+    padding: 0 20px;
+  }
+
+  .paste-input-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .paste-input-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .paste-input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+    background: var(--color-background);
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+    outline: none;
+  }
+
+  .paste-input::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+  }
+
+  .paste-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(196,112,75,0.15);
+  }
+
+  .platform-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding: 8px 0;
+  }
+
+  .platform-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+  }
+
+  .platform-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .paste-clipboard-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 28px;
+    border: 2px dashed var(--color-primary);
+    border-radius: var(--radius-md);
+    background: rgba(196, 112, 75, 0.06);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: all 200ms ease;
+    margin-bottom: 36px;
+    min-height: 52px;
+  }
+
+  .paste-clipboard-btn:active {
+    background: rgba(196, 112, 75, 0.12);
+    transform: scale(0.98);
+  }
+
+  .paste-recent-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  .paste-recent-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--color-background);
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+
+  .paste-recent-card:active {
+    background: var(--color-border);
+    transform: scale(0.98);
+  }
+
+  .paste-recent-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .paste-recent-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .paste-recent-name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-text);
+    margin-bottom: 2px;
+  }
+
+  .paste-recent-source {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .paste-recent-check {
+    flex-shrink: 0;
+    color: var(--color-visited);
+  }
+
+  /* ========================================
+     STATE 3: PROCESSING — GLOBE ANIMATION
+     ======================================== */
+  .processing-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 85;
+    background: var(--color-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms ease;
+  }
+
+  .processing-screen.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .globe-container {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    margin-bottom: 40px;
+  }
+
+  /* Floating particles around globe */
+  .globe-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    opacity: 0;
+    animation: particleFloat 3s infinite ease-in-out;
+  }
+
+  .globe-particle:nth-child(1) {
+    top: 10px; left: 20px;
+    animation-delay: 0s;
+    background: var(--color-cta);
+  }
+  .globe-particle:nth-child(2) {
+    top: 30px; right: 10px;
+    animation-delay: 0.5s;
+    width: 4px; height: 4px;
+  }
+  .globe-particle:nth-child(3) {
+    bottom: 20px; left: 10px;
+    animation-delay: 1s;
+    width: 5px; height: 5px;
+    background: var(--color-accent-coral);
+  }
+  .globe-particle:nth-child(4) {
+    bottom: 10px; right: 20px;
+    animation-delay: 1.5s;
+    width: 3px; height: 3px;
+    background: var(--color-cta);
+  }
+  .globe-particle:nth-child(5) {
+    top: 50%; left: -5px;
+    animation-delay: 0.8s;
+    width: 4px; height: 4px;
+    background: var(--color-visited);
+  }
+  .globe-particle:nth-child(6) {
+    top: 15%; right: -2px;
+    animation-delay: 2s;
+    width: 5px; height: 5px;
+    background: var(--color-accent-coral);
+  }
+
+  @keyframes particleFloat {
+    0%, 100% {
+      opacity: 0;
+      transform: translateY(0) scale(0.5);
+    }
+    20% {
+      opacity: 0.7;
+      transform: translateY(-8px) scale(1);
+    }
+    80% {
+      opacity: 0.4;
+      transform: translateY(-20px) scale(0.7);
+    }
+  }
+
+  /* The globe itself */
+  .globe {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #C4704B 0%, #D4A843 40%, #E8856C 70%, #C4704B 100%);
+    overflow: hidden;
+    box-shadow:
+      0 0 40px rgba(196, 112, 75, 0.3),
+      0 0 80px rgba(212, 168, 67, 0.15),
+      inset -8px -8px 20px rgba(0,0,0,0.15),
+      inset 4px 4px 20px rgba(255,255,255,0.1);
+    animation: globePulse 3s infinite ease-in-out;
+  }
+
+  @keyframes globePulse {
+    0%, 100% {
+      box-shadow:
+        0 0 40px rgba(196, 112, 75, 0.3),
+        0 0 80px rgba(212, 168, 67, 0.15),
+        inset -8px -8px 20px rgba(0,0,0,0.15),
+        inset 4px 4px 20px rgba(255,255,255,0.1);
+    }
+    50% {
+      box-shadow:
+        0 0 50px rgba(196, 112, 75, 0.4),
+        0 0 100px rgba(212, 168, 67, 0.2),
+        inset -8px -8px 20px rgba(0,0,0,0.15),
+        inset 4px 4px 20px rgba(255,255,255,0.1);
+    }
+  }
+
+  /* Globe line container - rotates */
+  .globe-lines {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    animation: globeRotate 1.5s infinite linear;
+  }
+
+  @keyframes globeRotate {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+  }
+
+  /* Latitude lines */
+  .globe-lat {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+  }
+
+  .globe-lat:nth-child(1) {
+    width: 120px; height: 30px;
+    top: 22px;
+  }
+  .globe-lat:nth-child(2) {
+    width: 138px; height: 30px;
+    top: 55px;
+  }
+  .globe-lat:nth-child(3) {
+    width: 120px; height: 30px;
+    bottom: 22px;
+  }
+
+  /* Longitude lines */
+  .globe-lng {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+  }
+
+  .globe-lng:nth-child(4) {
+    width: 60px;
+    height: 138px;
+  }
+
+  .globe-lng:nth-child(5) {
+    width: 100px;
+    height: 138px;
+  }
+
+  .globe-lng:nth-child(6) {
+    width: 138px;
+    height: 138px;
+  }
+
+  /* Globe highlight/sheen */
+  .globe::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  }
+
+  .processing-text {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-text);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .processing-subtext {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+
+  /* ========================================
+     STATE 4: SUCCESS — DESTINATION REVEAL
+     ======================================== */
+  .success-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 85;
+    background: var(--color-background);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms ease;
+    overflow: hidden;
+  }
+
+  .success-screen.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .success-hero {
+    width: 100%;
+    height: 420px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .success-hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg,
+        #C4704B 0%,
+        #D4A843 25%,
+        #E8856C 45%,
+        #3A9E8F 65%,
+        #1B3A4B 85%,
+        #C4704B 100%
+      );
+    background-size: 300% 300%;
+    animation: heroShift 8s ease infinite;
+  }
+
+  @keyframes heroShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .success-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 30%, rgba(0,0,0,0.6) 100%);
+    z-index: 2;
+  }
+
+  .success-hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 24px;
+    z-index: 3;
+  }
+
+  .success-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-cta);
+    margin-bottom: 12px;
+  }
+
+  .success-destination {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 42px;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin-bottom: 4px;
+  }
+
+  .success-country {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  /* Back button on success */
+  .success-back {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 200ms ease;
+  }
+
+  .success-back:active {
+    background: rgba(255,255,255,0.35);
+    transform: scale(0.92);
+  }
+
+  .success-body {
+    padding: 24px 20px 120px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 0;
+    margin-bottom: 28px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 14px 8px;
+    text-align: center;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .stat-item:last-child {
+    border-right: none;
+  }
+
+  .stat-emoji {
+    font-size: 20px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    color: var(--color-primary);
+  }
+
+  .stat-label {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .stat-value {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text);
+  }
+
+  .save-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 28px;
+    border-radius: var(--radius-full);
+    background: var(--color-cta);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+    min-height: 56px;
+    box-shadow: 0 4px 16px rgba(212, 168, 67, 0.35);
+    transition: all 200ms ease;
+    margin-bottom: 14px;
+  }
+
+  .save-cta:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(212, 168, 67, 0.25);
+  }
+
+  .save-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 28px;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    min-height: 48px;
+    transition: all 200ms ease;
+  }
+
+  .save-secondary:active {
+    opacity: 0.6;
+  }
+
+  /* ========================================
+     CONFETTI / SPARKLE ANIMATION
+     ======================================== */
+  .confetti-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+  }
+
+  .confetti.active {
+    animation: confettiFall 2.5s ease-out forwards;
+  }
+
+  .confetti-circle {
+    border-radius: 50%;
+  }
+
+  .confetti-square {
+    border-radius: 2px;
+    transform: rotate(45deg);
+  }
+
+  .confetti-star {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 8px solid currentColor;
+    background: none !important;
+  }
+
+  @keyframes confettiFall {
+    0% {
+      opacity: 1;
+      transform: translateY(-20px) rotate(0deg) scale(0);
+    }
+    10% {
+      opacity: 1;
+      transform: translateY(0) rotate(45deg) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(600px) rotate(720deg) scale(0.3);
+    }
+  }
+
+  /* ========================================
+     STATE 5: LOW CONFIDENCE
+     ======================================== */
+  .lowconf-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 85;
+    background: var(--color-background);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms ease;
+    overflow-y: auto;
+  }
+
+  .lowconf-screen.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .lowconf-header {
+    padding: 64px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .lowconf-back {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-text);
+    transition: all 200ms ease;
+    flex-shrink: 0;
+  }
+
+  .lowconf-back:active {
+    background: var(--color-border);
+    transform: scale(0.92);
+  }
+
+  .lowconf-body {
+    padding: 0 20px;
+  }
+
+  .lowconf-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 30px;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  .lowconf-subtitle {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .lowconf-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 2px solid transparent;
+    position: relative;
+  }
+
+  .lowconf-card:active {
+    transform: scale(0.98);
+  }
+
+  .lowconf-card.selected {
+    border-color: var(--color-primary);
+    background: rgba(196, 112, 75, 0.04);
+  }
+
+  .lowconf-card-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .lowconf-card-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .lowconf-card-name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .lowconf-card-conf {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .conf-bar {
+    width: 60px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-border);
+    overflow: hidden;
+  }
+
+  .conf-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    transition: width 600ms ease;
+  }
+
+  .conf-pct {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+  }
+
+  .lowconf-radio {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease;
+  }
+
+  .lowconf-card.selected .lowconf-radio {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+  }
+
+  .lowconf-radio-inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .lowconf-card.selected .lowconf-radio-inner {
+    opacity: 1;
+  }
+
+  .lowconf-footer {
+    padding: 24px 20px 120px;
+  }
+
+  .lowconf-manual {
+    display: block;
+    text-align: center;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-primary);
+    text-decoration: none;
+    margin-bottom: 20px;
+    cursor: pointer;
+    padding: 8px;
+    transition: opacity 200ms ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lowconf-manual:active {
+    opacity: 0.6;
+  }
+
+  .lowconf-confirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 28px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    min-height: 52px;
+    box-shadow: 0 4px 16px rgba(196, 112, 75, 0.3);
+    transition: all 200ms ease;
+  }
+
+  .lowconf-confirm:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(196, 112, 75, 0.2);
+  }
+
+  /* ========================================
+     BOTTOM NAVIGATION
+     ======================================== */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 8px 8px 28px;
+    z-index: 90;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    min-width: 48px;
+    min-height: 48px;
+    justify-content: center;
+    transition: color 200ms ease;
+    position: relative;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-item .nav-label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+    transition: color 200ms ease;
+  }
+
+  .nav-item.active .nav-icon,
+  .nav-item.active .nav-label {
+    color: var(--color-primary);
+  }
+
+  .nav-item:not(.active) .nav-icon,
+  .nav-item:not(.active) .nav-label {
+    color: var(--color-text-secondary);
+  }
+
+  .nav-item:active:not(.nav-import) {
+    opacity: 0.6;
+  }
+
+  /* Import (center raised) button */
+  .nav-import {
+    position: relative;
+    top: -14px;
+  }
+
+  .nav-import-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(196, 112, 75, 0.4);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    cursor: pointer;
+  }
+
+  .nav-import-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 8px rgba(196, 112, 75, 0.3);
+  }
+
+  .nav-import .nav-label {
+    margin-top: 4px;
+    color: var(--color-primary) !important;
+    font-weight: 600 !important;
+  }
+
+  /* ========================================
+     REDUCED MOTION
+     ======================================== */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  /* ========================================
+     RESPONSIVE TWEAKS
+     ======================================== */
+  @media (max-width: 420px) {
+    body {
+      padding: 0;
+    }
+
+    .device-frame {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .device-frame::before {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+
+  <!-- Scrollable content area (home bg behind the sheet) -->
+  <div class="screen" id="homeScreen">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons">
+        <span style="font-size:11px;">5G</span>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <rect x="0" y="6" width="3" height="6" rx="1" fill="#1A1A1E"/>
+          <rect x="4.5" y="4" width="3" height="8" rx="1" fill="#1A1A1E"/>
+          <rect x="9" y="1.5" width="3" height="10.5" rx="1" fill="#1A1A1E"/>
+          <rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1A1E" opacity="0.3"/>
+        </svg>
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+          <rect x="0.5" y="0.5" width="18" height="11" rx="2" stroke="#1A1A1E" stroke-opacity="0.35"/>
+          <rect x="2" y="2" width="13" height="8" rx="1" fill="#1A1A1E"/>
+          <path d="M20 4.5V7.5C20.8 7.2 20.8 4.8 20 4.5Z" fill="#1A1A1E" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Faded home content preview -->
+    <div style="padding: 16px 20px 20px;">
+      <div style="font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: var(--color-secondary); margin-bottom: 4px;">Good morning, Alex</div>
+      <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 20px;">Where to next?</div>
+      <div style="width: 100%; height: 200px; border-radius: var(--radius-xl); background: linear-gradient(135deg, #C4704B, #D4A843, #E8856C); opacity: 0.6;"></div>
+    </div>
+  </div>
+
+  <!-- Prototype Navigation Bar -->
+  <div class="proto-nav">
+    <button class="proto-dot active" data-state="1" title="Bottom Sheet"></button>
+    <button class="proto-dot" data-state="2" title="Paste Link"></button>
+    <button class="proto-dot" data-state="3" title="Processing"></button>
+    <button class="proto-dot" data-state="4" title="Success"></button>
+    <button class="proto-dot" data-state="5" title="Low Confidence"></button>
+    <span class="proto-label" id="protoLabel">1 / 5 Bottom Sheet</span>
+    <button class="proto-btn" id="protoNext">Next</button>
+  </div>
+
+  <!-- Dim Overlay (for State 1 bottom sheet) -->
+  <div class="overlay-dim" id="overlayDim"></div>
+
+  <!-- ==========================================
+       STATE 1: Import Bottom Sheet
+       ========================================== -->
+  <div class="bottom-sheet state" id="state1">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title">Add a destination</h2>
+
+    <div class="sheet-option" onclick="goToState(2)">
+      <div class="sheet-option-icon">
+        <i data-lucide="link" style="width:22px;height:22px;color:white;"></i>
+      </div>
+      <div class="sheet-option-text">
+        <div class="sheet-option-title">Paste a Link</div>
+        <div class="sheet-option-desc">Instagram, TikTok, YouTube, Pinterest...</div>
+      </div>
+      <div class="sheet-option-arrow">
+        <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+      </div>
+    </div>
+
+    <div class="sheet-option">
+      <div class="sheet-option-icon">
+        <i data-lucide="camera" style="width:22px;height:22px;color:white;"></i>
+      </div>
+      <div class="sheet-option-text">
+        <div class="sheet-option-title">Camera</div>
+        <div class="sheet-option-desc">Scan a magazine, billboard, or TV screen</div>
+      </div>
+      <div class="sheet-option-arrow">
+        <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+      </div>
+    </div>
+
+    <div class="sheet-option">
+      <div class="sheet-option-icon">
+        <i data-lucide="search" style="width:22px;height:22px;color:white;"></i>
+      </div>
+      <div class="sheet-option-text">
+        <div class="sheet-option-title">Search</div>
+        <div class="sheet-option-desc">Type a destination name</div>
+      </div>
+      <div class="sheet-option-arrow">
+        <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       STATE 2: Paste Link Input
+       ========================================== -->
+  <div class="paste-screen state" id="state2">
+    <div class="paste-header">
+      <button class="paste-back" onclick="goToState(1)">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
+      </button>
+      <h2 class="paste-title">Paste a Link</h2>
+    </div>
+
+    <div class="paste-content">
+      <div class="paste-input-wrapper">
+        <label class="paste-input-label">Paste an Instagram, TikTok, or YouTube link</label>
+        <input class="paste-input" type="url" placeholder="https://www.instagram.com/reel/..." />
+      </div>
+
+      <!-- Platform icons -->
+      <div class="platform-row">
+        <!-- Instagram -->
+        <div class="platform-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </div>
+        <!-- TikTok -->
+        <div class="platform-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46 6.28 6.28 0 001.82-4.44V8.83a8.28 8.28 0 004.76 1.5V6.89a4.84 4.84 0 01-1-.2z"/></svg>
+        </div>
+        <!-- YouTube -->
+        <div class="platform-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </div>
+        <!-- Pinterest -->
+        <div class="platform-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>
+        </div>
+        <!-- X / Twitter -->
+        <div class="platform-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+      </div>
+
+      <!-- Paste from clipboard -->
+      <button class="paste-clipboard-btn" onclick="goToState(3)">
+        <i data-lucide="clipboard" style="width:18px;height:18px;"></i>
+        Paste from clipboard
+      </button>
+
+      <!-- Recently imported -->
+      <div class="paste-recent-title">Recently Imported</div>
+
+      <div class="paste-recent-card">
+        <div class="paste-recent-thumb" style="background: linear-gradient(135deg, #E8856C, #D4A843);"></div>
+        <div class="paste-recent-info">
+          <div class="paste-recent-name">Santorini, Greece</div>
+          <div class="paste-recent-source">via Instagram Reel - 2 days ago</div>
+        </div>
+        <div class="paste-recent-check">
+          <i data-lucide="check-circle-2" style="width:20px;height:20px;"></i>
+        </div>
+      </div>
+
+      <div class="paste-recent-card">
+        <div class="paste-recent-thumb" style="background: linear-gradient(135deg, #3A9E8F, #1B3A4B);"></div>
+        <div class="paste-recent-info">
+          <div class="paste-recent-name">Kyoto, Japan</div>
+          <div class="paste-recent-source">via TikTok - 5 days ago</div>
+        </div>
+        <div class="paste-recent-check">
+          <i data-lucide="check-circle-2" style="width:20px;height:20px;"></i>
+        </div>
+      </div>
+
+      <div class="paste-recent-card">
+        <div class="paste-recent-thumb" style="background: linear-gradient(135deg, #C4704B, #E8856C);"></div>
+        <div class="paste-recent-info">
+          <div class="paste-recent-name">Marrakech, Morocco</div>
+          <div class="paste-recent-source">via YouTube Short - 1 week ago</div>
+        </div>
+        <div class="paste-recent-check">
+          <i data-lucide="check-circle-2" style="width:20px;height:20px;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       STATE 3: Processing — Globe Animation
+       ========================================== -->
+  <div class="processing-screen state" id="state3">
+    <div class="globe-container">
+      <!-- Floating particles -->
+      <div class="globe-particle"></div>
+      <div class="globe-particle"></div>
+      <div class="globe-particle"></div>
+      <div class="globe-particle"></div>
+      <div class="globe-particle"></div>
+      <div class="globe-particle"></div>
+
+      <!-- Globe -->
+      <div class="globe">
+        <div class="globe-lines">
+          <!-- Latitude lines -->
+          <div class="globe-lat"></div>
+          <div class="globe-lat"></div>
+          <div class="globe-lat"></div>
+          <!-- Longitude lines -->
+          <div class="globe-lng"></div>
+          <div class="globe-lng"></div>
+          <div class="globe-lng"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="processing-text">Finding your destination...</div>
+    <div class="processing-subtext">Analyzing video content with AI</div>
+  </div>
+
+  <!-- ==========================================
+       STATE 4: Success — Destination Reveal
+       ========================================== -->
+  <div class="success-screen state" id="state4">
+    <!-- Confetti container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <div class="success-hero">
+      <div class="success-hero-bg"></div>
+      <div class="success-hero-overlay"></div>
+
+      <button class="success-back" onclick="goToState(1)">
+        <i data-lucide="x" style="width:20px;height:20px;"></i>
+      </button>
+
+      <div class="success-hero-content">
+        <div class="success-badge">
+          <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+          DESTINATION FOUND
+        </div>
+        <h1 class="success-destination">Bali</h1>
+        <p class="success-country">Indonesia</p>
+      </div>
+    </div>
+
+    <div class="success-body">
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i data-lucide="flag" style="width:18px;height:18px;"></i>
+          </div>
+          <span class="stat-label">Region</span>
+          <span class="stat-value">SE Asia</span>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i data-lucide="globe" style="width:18px;height:18px;"></i>
+          </div>
+          <span class="stat-label">Continent</span>
+          <span class="stat-value">Asia</span>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i data-lucide="banknote" style="width:18px;height:18px;"></i>
+          </div>
+          <span class="stat-label">Currency</span>
+          <span class="stat-value">IDR</span>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i data-lucide="sun" style="width:18px;height:18px;"></i>
+          </div>
+          <span class="stat-label">Season</span>
+          <span class="stat-value">Dry</span>
+        </div>
+      </div>
+
+      <button class="save-cta">
+        <i data-lucide="bookmark" style="width:20px;height:20px;"></i>
+        Save to Bucket List
+      </button>
+
+      <button class="save-secondary">
+        <i data-lucide="share-2" style="width:18px;height:18px;"></i>
+        Share with a friend
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       STATE 5: Low Confidence
+       ========================================== -->
+  <div class="lowconf-screen state" id="state5">
+    <div class="lowconf-header">
+      <button class="lowconf-back" onclick="goToState(1)">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
+      </button>
+    </div>
+
+    <div class="lowconf-body">
+      <h2 class="lowconf-title">We think this might be...</h2>
+      <p class="lowconf-subtitle">Select the correct destination below</p>
+
+      <!-- Card 1 — 85% -->
+      <div class="lowconf-card selected" onclick="selectLowConf(this)">
+        <div class="lowconf-card-thumb" style="background: linear-gradient(135deg, #C4704B, #D4A843);"></div>
+        <div class="lowconf-card-info">
+          <div class="lowconf-card-name">Bali, Indonesia</div>
+          <div class="lowconf-card-conf">
+            <div class="conf-bar"><div class="conf-bar-fill" style="width:85%;"></div></div>
+            <span class="conf-pct">85%</span>
+          </div>
+        </div>
+        <div class="lowconf-radio">
+          <div class="lowconf-radio-inner"></div>
+        </div>
+      </div>
+
+      <!-- Card 2 — 10% -->
+      <div class="lowconf-card" onclick="selectLowConf(this)">
+        <div class="lowconf-card-thumb" style="background: linear-gradient(135deg, #3A9E8F, #1B3A4B);"></div>
+        <div class="lowconf-card-info">
+          <div class="lowconf-card-name">Lombok, Indonesia</div>
+          <div class="lowconf-card-conf">
+            <div class="conf-bar"><div class="conf-bar-fill" style="width:10%;"></div></div>
+            <span class="conf-pct">10%</span>
+          </div>
+        </div>
+        <div class="lowconf-radio">
+          <div class="lowconf-radio-inner"></div>
+        </div>
+      </div>
+
+      <!-- Card 3 — 5% -->
+      <div class="lowconf-card" onclick="selectLowConf(this)">
+        <div class="lowconf-card-thumb" style="background: linear-gradient(135deg, #E8856C, #D4A843);"></div>
+        <div class="lowconf-card-info">
+          <div class="lowconf-card-name">Phuket, Thailand</div>
+          <div class="lowconf-card-conf">
+            <div class="conf-bar"><div class="conf-bar-fill" style="width:5%;"></div></div>
+            <span class="conf-pct">5%</span>
+          </div>
+        </div>
+        <div class="lowconf-radio">
+          <div class="lowconf-radio-inner"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lowconf-footer">
+      <a class="lowconf-manual">None of these? Search manually</a>
+      <button class="lowconf-confirm" onclick="goToState(4)">Confirm</button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       BOTTOM NAVIGATION
+       ========================================== -->
+  <nav class="bottom-nav" id="bottomNav">
+    <!-- Home -->
+    <div class="nav-item">
+      <i data-lucide="house" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">Home</span>
+    </div>
+
+    <!-- Explore -->
+    <div class="nav-item">
+      <i data-lucide="compass" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">Explore</span>
+    </div>
+
+    <!-- Import (raised center) — active -->
+    <div class="nav-item nav-import active" onclick="goToState(1)">
+      <div class="nav-import-btn">
+        <i data-lucide="plus" style="width:26px;height:26px;color:white;"></i>
+      </div>
+      <span class="nav-label">Import</span>
+    </div>
+
+    <!-- My Trips -->
+    <div class="nav-item">
+      <i data-lucide="map-pin" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">My Trips</span>
+    </div>
+
+    <!-- Profile -->
+    <div class="nav-item">
+      <i data-lucide="user" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+
+</div><!-- /.device-frame -->
+
+<script>
+  // ========================================
+  // STATE MANAGEMENT
+  // ========================================
+  let currentState = 0;
+  const stateLabels = [
+    '',
+    '1 / 5 Bottom Sheet',
+    '2 / 5 Paste Link',
+    '3 / 5 Processing',
+    '4 / 5 Success',
+    '5 / 5 Low Confidence'
+  ];
+
+  function goToState(num) {
+    // Hide all states
+    hideAllStates();
+
+    currentState = num;
+
+    // Update prototype nav dots
+    document.querySelectorAll('.proto-dot').forEach(dot => {
+      dot.classList.toggle('active', parseInt(dot.dataset.state) === num);
+    });
+    document.getElementById('protoLabel').textContent = stateLabels[num];
+
+    switch (num) {
+      case 1:
+        showState1();
+        break;
+      case 2:
+        showState2();
+        break;
+      case 3:
+        showState3();
+        break;
+      case 4:
+        showState4();
+        break;
+      case 5:
+        showState5();
+        break;
+    }
+
+    // Re-init Lucide icons after state change
+    requestAnimationFrame(() => {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  }
+
+  function hideAllStates() {
+    const overlay = document.getElementById('overlayDim');
+    const sheet = document.getElementById('state1');
+    const paste = document.getElementById('state2');
+    const processing = document.getElementById('state3');
+    const success = document.getElementById('state4');
+    const lowconf = document.getElementById('state5');
+    const bottomNav = document.getElementById('bottomNav');
+
+    overlay.classList.remove('visible');
+    sheet.classList.remove('visible', 'active');
+    paste.classList.remove('visible', 'active');
+    processing.classList.remove('visible', 'active');
+    success.classList.remove('visible', 'active');
+    lowconf.classList.remove('visible', 'active');
+
+    bottomNav.style.display = 'flex';
+  }
+
+  function showState1() {
+    const overlay = document.getElementById('overlayDim');
+    const sheet = document.getElementById('state1');
+    const bottomNav = document.getElementById('bottomNav');
+
+    sheet.classList.add('active');
+    bottomNav.style.display = 'none';
+
+    // Animate in after a tiny delay for the spring effect
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        overlay.classList.add('visible');
+        sheet.classList.add('visible');
+      });
+    });
+  }
+
+  function showState2() {
+    const paste = document.getElementById('state2');
+    const bottomNav = document.getElementById('bottomNav');
+
+    paste.classList.add('active');
+    bottomNav.style.display = 'none';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        paste.classList.add('visible');
+      });
+    });
+  }
+
+  function showState3() {
+    const processing = document.getElementById('state3');
+    const bottomNav = document.getElementById('bottomNav');
+
+    processing.classList.add('active');
+    bottomNav.style.display = 'none';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        processing.classList.add('visible');
+      });
+    });
+  }
+
+  function showState4() {
+    const success = document.getElementById('state4');
+    const bottomNav = document.getElementById('bottomNav');
+
+    success.classList.add('active');
+    bottomNav.style.display = 'none';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        success.classList.add('visible');
+        // Fire confetti after reveal
+        setTimeout(fireConfetti, 300);
+      });
+    });
+  }
+
+  function showState5() {
+    const lowconf = document.getElementById('state5');
+    const bottomNav = document.getElementById('bottomNav');
+
+    lowconf.classList.add('active');
+    bottomNav.style.display = 'none';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        lowconf.classList.add('visible');
+      });
+    });
+  }
+
+  // ========================================
+  // CONFETTI SYSTEM
+  // ========================================
+  function fireConfetti() {
+    const container = document.getElementById('confettiContainer');
+    container.innerHTML = '';
+
+    const colors = ['#C4704B', '#D4A843', '#E8856C', '#3A9E8F', '#1B3A4B', '#FFFFFF'];
+    const shapes = ['confetti-circle', 'confetti-square', 'confetti-star'];
+
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('div');
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      piece.className = 'confetti ' + shape;
+      piece.style.left = (Math.random() * 100) + '%';
+      piece.style.top = '-10px';
+      piece.style.background = shape === 'confetti-star' ? 'none' : color;
+      piece.style.color = color;
+      piece.style.width = (4 + Math.random() * 8) + 'px';
+      piece.style.height = (4 + Math.random() * 8) + 'px';
+      piece.style.animationDelay = (Math.random() * 0.8) + 's';
+      piece.style.animationDuration = (1.8 + Math.random() * 1.5) + 's';
+
+      container.appendChild(piece);
+
+      // Trigger animation
+      requestAnimationFrame(() => {
+        piece.classList.add('active');
+      });
+    }
+  }
+
+  // ========================================
+  // LOW CONFIDENCE SELECTION
+  // ========================================
+  function selectLowConf(card) {
+    document.querySelectorAll('.lowconf-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+
+  // ========================================
+  // PROTOTYPE NAV — DOT CLICKS & NEXT BUTTON
+  // ========================================
+  document.querySelectorAll('.proto-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      goToState(parseInt(dot.dataset.state));
+    });
+  });
+
+  document.getElementById('protoNext').addEventListener('click', () => {
+    const next = currentState >= 5 ? 1 : currentState + 1;
+    goToState(next);
+  });
+
+  // ========================================
+  // INITIALIZE
+  // ========================================
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    // Start with state 1
+    goToState(1);
+  });
+
+  window.addEventListener('load', function() {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Someday — Itinerary Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  /* ========================================
+     CSS VARIABLES — Someday Design Tokens
+     ======================================== */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-card-pressed: 0 1px 4px rgba(0,0,0,0.06);
+    --shadow-bottom-sheet: 0 -4px 24px rgba(0,0,0,0.15);
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* ========================================
+     RESET + BASE
+     ======================================== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: #E8E4DE;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
+  /* ========================================
+     DEVICE FRAME
+     ======================================== */
+  .device-frame {
+    width: 390px;
+    height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #1A1A1E,
+      0 0 0 6px #333,
+      0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ========================================
+     STATUS BAR
+     ======================================== */
+  .status-bar {
+    height: 54px;
+    padding: 14px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-background);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .status-time {
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+  }
+
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* ========================================
+     HEADER
+     ======================================== */
+  .header {
+    padding: 8px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-background);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-back {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+    flex-shrink: 0;
+  }
+
+  .header-back:active {
+    transform: scale(0.95);
+    background: var(--color-border);
+  }
+
+  .header-title-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 1px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-avatars {
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+  }
+
+  .header-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-surface);
+    margin-left: -8px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .header-avatar:first-child {
+    margin-left: 0;
+  }
+
+  .header-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+
+  .header-icon-btn:active {
+    transform: scale(0.95);
+    background: var(--color-border);
+  }
+
+  /* ========================================
+     DAY TABS
+     ======================================== */
+  .day-tabs-container {
+    flex-shrink: 0;
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    z-index: 5;
+  }
+
+  .day-tabs {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 20px;
+    gap: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+  }
+
+  .day-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .day-tab {
+    padding: 10px 16px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    cursor: pointer;
+    position: relative;
+    transition: color 200ms ease;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .day-tab.active {
+    color: var(--color-primary);
+  }
+
+  .day-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    height: 3px;
+    background: var(--color-primary);
+    border-radius: 3px 3px 0 0;
+  }
+
+  .day-tab-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .day-tab-date {
+    display: none;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  .day-tab.active .day-tab-date {
+    display: block;
+    color: var(--color-primary);
+    opacity: 0.7;
+  }
+
+  /* ========================================
+     TIMELINE
+     ======================================== */
+  .timeline-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 20px 100px;
+    scrollbar-width: none;
+  }
+
+  .timeline-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 72px;
+  }
+
+  /* Gradient timeline line */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 56px;
+    top: 8px;
+    bottom: 40px;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      #D4A843 0%,
+      #C4704B 40%,
+      #1B3A4B 85%,
+      #1B3A4B 100%
+    );
+    border-radius: 2px;
+  }
+
+  /* ========================================
+     TIMELINE ITEM
+     ======================================== */
+  .timeline-item {
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  /* Time label */
+  .timeline-time {
+    position: absolute;
+    left: -72px;
+    top: 2px;
+    width: 52px;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    line-height: 1;
+  }
+
+  /* Timeline dot */
+  .timeline-dot {
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    border: 2px solid;
+    background: var(--color-background);
+    z-index: 2;
+  }
+
+  .timeline-dot.morning {
+    border-color: var(--color-cta);
+  }
+
+  .timeline-dot.afternoon {
+    border-color: var(--color-primary);
+  }
+
+  .timeline-dot.evening {
+    border-color: var(--color-secondary);
+  }
+
+  /* ========================================
+     ACTIVITY CARD
+     ======================================== */
+  .activity-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 6px;
+    transition: all 200ms ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .activity-card:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-card-pressed);
+  }
+
+  .activity-photo {
+    width: 72px;
+    min-height: 80px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  .activity-content {
+    flex: 1;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .activity-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .activity-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.3;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .activity-drag {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 2px;
+    opacity: 0.3;
+    cursor: grab;
+  }
+
+  .activity-drag-row {
+    display: flex;
+    gap: 3px;
+  }
+
+  .activity-drag-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: var(--radius-full);
+    background: var(--color-text);
+  }
+
+  .activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .activity-tag {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    line-height: 1.4;
+  }
+
+  .tag-culture {
+    background: rgba(212, 168, 67, 0.15);
+    color: #B8922A;
+  }
+
+  .tag-food {
+    background: rgba(232, 133, 108, 0.15);
+    color: #D06A4F;
+  }
+
+  .tag-nature {
+    background: rgba(58, 158, 143, 0.15);
+    color: #2D8A78;
+  }
+
+  .tag-shopping {
+    background: rgba(196, 112, 75, 0.15);
+    color: var(--color-primary);
+  }
+
+  .tag-photography {
+    background: rgba(27, 58, 75, 0.15);
+    color: var(--color-secondary);
+  }
+
+  .tag-dining {
+    background: rgba(212, 168, 67, 0.15);
+    color: #9E7E24;
+  }
+
+  .activity-duration {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+
+  .activity-note {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: 1px;
+  }
+
+  .activity-comment-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+  }
+
+  /* ========================================
+     TRAVEL CONNECTOR
+     ======================================== */
+  .travel-connector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0 8px 0;
+    position: relative;
+  }
+
+  .travel-connector-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--color-background);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+  }
+
+  .travel-connector-text {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* ========================================
+     FAB — Add Activity
+     ======================================== */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(196, 112, 75, 0.4);
+    cursor: pointer;
+    transition: all 200ms ease;
+    z-index: 20;
+    border: none;
+  }
+
+  .fab:active {
+    transform: scale(0.93);
+    box-shadow: 0 2px 8px rgba(196, 112, 75, 0.3);
+  }
+
+  /* ========================================
+     BOTTOM NAV
+     ======================================== */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding: 8px 8px 0;
+    z-index: 30;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: all 200ms ease;
+    position: relative;
+  }
+
+  .nav-item:active {
+    transform: scale(0.92);
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .nav-item.active .nav-label {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .nav-item.active i {
+    color: var(--color-primary);
+  }
+
+  .nav-item i {
+    color: var(--color-text-secondary);
+  }
+
+  .nav-import {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -10px;
+    box-shadow: 0 2px 12px rgba(196, 112, 75, 0.3);
+    transition: all 200ms ease;
+  }
+
+  .nav-import:active {
+    transform: scale(0.92);
+  }
+
+  .nav-import i {
+    color: white !important;
+  }
+
+  /* ========================================
+     SETUP MODAL (Full-screen overlay)
+     ======================================== */
+  .setup-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 26, 30, 0.5);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    transition: opacity 350ms ease;
+  }
+
+  .setup-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .setup-sheet {
+    width: 100%;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 12px 24px 34px;
+    box-shadow: var(--shadow-bottom-sheet);
+    transform: translateY(0);
+    transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 90%;
+    overflow-y: auto;
+  }
+
+  .setup-overlay.hidden .setup-sheet {
+    transform: translateY(100%);
+  }
+
+  .setup-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-border);
+    margin: 0 auto 20px;
+  }
+
+  .setup-hero {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .setup-hero-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, #C4704B, #D4A843);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+  }
+
+  .setup-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .setup-subtitle {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Setup sections */
+  .setup-section {
+    margin-bottom: 22px;
+  }
+
+  .setup-section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 10px;
+  }
+
+  /* Duration stepper */
+  .duration-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .stepper-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+    color: var(--color-text);
+  }
+
+  .stepper-btn:active {
+    transform: scale(0.92);
+    background: var(--color-border);
+  }
+
+  .stepper-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-primary);
+    min-width: 50px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .stepper-unit {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+  }
+
+  /* Chip groups */
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chip:active {
+    transform: scale(0.96);
+  }
+
+  .chip.selected {
+    background: rgba(196, 112, 75, 0.1);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  /* Budget selector */
+  .budget-options {
+    display: flex;
+    gap: 6px;
+  }
+
+  .budget-option {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    text-align: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+  }
+
+  .budget-option:active {
+    transform: scale(0.96);
+  }
+
+  .budget-option.selected {
+    background: rgba(196, 112, 75, 0.1);
+    border-color: var(--color-primary);
+  }
+
+  .budget-symbol {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .budget-option.selected .budget-symbol {
+    color: var(--color-primary);
+  }
+
+  .budget-label {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  .budget-option.selected .budget-label {
+    color: var(--color-primary);
+  }
+
+  /* Generate button */
+  .btn-generate {
+    width: 100%;
+    padding: 16px 28px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    border: none;
+    cursor: pointer;
+    transition: all 200ms ease;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-generate:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  /* ========================================
+     LOADING STATE
+     ======================================== */
+  .loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--color-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  .loading-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  .loading-subtext {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+
+  /* ========================================
+     ANIMATIONS
+     ======================================== */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .timeline-item {
+    animation: slideUp 400ms ease forwards;
+    opacity: 0;
+  }
+
+  .timeline-item:nth-child(1) { animation-delay: 0ms; }
+  .timeline-item:nth-child(2) { animation-delay: 40ms; }
+  .timeline-item:nth-child(3) { animation-delay: 80ms; }
+  .timeline-item:nth-child(4) { animation-delay: 120ms; }
+  .timeline-item:nth-child(5) { animation-delay: 160ms; }
+  .timeline-item:nth-child(6) { animation-delay: 200ms; }
+  .timeline-item:nth-child(7) { animation-delay: 240ms; }
+  .timeline-item:nth-child(8) { animation-delay: 280ms; }
+  .timeline-item:nth-child(9) { animation-delay: 320ms; }
+  .timeline-item:nth-child(10) { animation-delay: 360ms; }
+  .timeline-item:nth-child(11) { animation-delay: 400ms; }
+  .timeline-item:nth-child(12) { animation-delay: 440ms; }
+  .timeline-item:nth-child(13) { animation-delay: 480ms; }
+  .timeline-item:nth-child(14) { animation-delay: 520ms; }
+  .timeline-item:nth-child(15) { animation-delay: 560ms; }
+  .timeline-item:nth-child(16) { animation-delay: 600ms; }
+  .timeline-item:nth-child(17) { animation-delay: 640ms; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-item {
+      animation: none;
+      opacity: 1;
+    }
+    .loading-spinner {
+      animation-duration: 3s;
+    }
+    .setup-sheet,
+    .setup-overlay {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+  <div class="screen">
+
+    <!-- ============================
+         STATUS BAR
+         ============================ -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <i data-lucide="signal" style="width:14px;height:14px;"></i>
+        <i data-lucide="wifi" style="width:14px;height:14px;"></i>
+        <i data-lucide="battery-full" style="width:18px;height:14px;"></i>
+      </div>
+    </div>
+
+    <!-- ============================
+         HEADER
+         ============================ -->
+    <div class="header">
+      <div class="header-left">
+        <div class="header-back">
+          <i data-lucide="chevron-left" style="width:20px;height:20px;color:var(--color-text);"></i>
+        </div>
+        <div class="header-title-group">
+          <div class="header-title">Bali &middot; 7 Days</div>
+          <div class="header-subtitle">Oct 15 &ndash; Oct 21, 2025</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-avatars">
+          <div class="header-avatar" style="background: linear-gradient(135deg, #E8856C, #D4A843); z-index: 3;"></div>
+          <div class="header-avatar" style="background: linear-gradient(135deg, #3A9E8F, #1B3A4B); z-index: 2;"></div>
+          <div class="header-avatar" style="background: linear-gradient(135deg, #C4704B, #E8856C); z-index: 1;"></div>
+        </div>
+        <div class="header-icon-btn" title="Share">
+          <i data-lucide="share-2" style="width:17px;height:17px;color:var(--color-text-secondary);"></i>
+        </div>
+        <div class="header-icon-btn" title="Map view">
+          <i data-lucide="map" style="width:17px;height:17px;color:var(--color-text-secondary);"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         DAY TABS
+         ============================ -->
+    <div class="day-tabs-container">
+      <div class="day-tabs" id="dayTabs">
+        <div class="day-tab active" data-day="1">
+          <span class="day-tab-label">Day 1</span>
+          <span class="day-tab-date">Tue, Oct 15</span>
+        </div>
+        <div class="day-tab" data-day="2">
+          <span class="day-tab-label">Day 2</span>
+          <span class="day-tab-date">Wed, Oct 16</span>
+        </div>
+        <div class="day-tab" data-day="3">
+          <span class="day-tab-label">Day 3</span>
+          <span class="day-tab-date">Thu, Oct 17</span>
+        </div>
+        <div class="day-tab" data-day="4">
+          <span class="day-tab-label">Day 4</span>
+          <span class="day-tab-date">Fri, Oct 18</span>
+        </div>
+        <div class="day-tab" data-day="5">
+          <span class="day-tab-label">Day 5</span>
+          <span class="day-tab-date">Sat, Oct 19</span>
+        </div>
+        <div class="day-tab" data-day="6">
+          <span class="day-tab-label">Day 6</span>
+          <span class="day-tab-date">Sun, Oct 20</span>
+        </div>
+        <div class="day-tab" data-day="7">
+          <span class="day-tab-label">Day 7</span>
+          <span class="day-tab-date">Mon, Oct 21</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         TIMELINE CONTENT
+         ============================ -->
+    <div class="timeline-scroll" id="timelineScroll">
+      <div class="timeline">
+
+        <!-- 9:00 AM — Tegallalang Rice Terraces -->
+        <div class="timeline-item">
+          <div class="timeline-time">9:00 AM</div>
+          <div class="timeline-dot morning"></div>
+          <div class="activity-card">
+            <div class="activity-photo" style="background-image:url('https://images.unsplash.com/photo-1531592937781-2a5995f26138?w=200&h=200&fit=crop&q=80');"></div>
+            <div class="activity-content">
+              <div class="activity-top-row">
+                <span class="activity-name">Tegallalang Rice Terraces</span>
+                <div class="activity-drag">
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                </div>
+              </div>
+              <div class="activity-meta">
+                <span class="activity-tag tag-culture">Culture</span>
+                <span class="activity-duration">2 hours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel connector -->
+        <div class="timeline-item">
+          <div class="travel-connector">
+            <div class="travel-connector-line">
+              <i data-lucide="bike" style="width:12px;height:12px;color:var(--color-text-secondary);flex-shrink:0;"></i>
+              <span class="travel-connector-text">25 min by scooter</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12:00 PM — Warung Ibu Oka -->
+        <div class="timeline-item">
+          <div class="timeline-time">12:00 PM</div>
+          <div class="timeline-dot morning"></div>
+          <div class="activity-card">
+            <div class="activity-photo" style="background-image:url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=200&fit=crop&q=80');"></div>
+            <div class="activity-content">
+              <div class="activity-top-row">
+                <span class="activity-name">Warung Ibu Oka</span>
+                <div class="activity-drag">
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                </div>
+              </div>
+              <div class="activity-meta">
+                <span class="activity-tag tag-food">Food</span>
+                <span class="activity-duration">1 hour</span>
+              </div>
+              <div class="activity-note">Lunch: Try the babi guling</div>
+            </div>
+            <div class="activity-comment-badge">
+              <i data-lucide="message-circle" style="width:9px;height:9px;"></i>
+              2
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel connector -->
+        <div class="timeline-item">
+          <div class="travel-connector">
+            <div class="travel-connector-line">
+              <i data-lucide="footprints" style="width:12px;height:12px;color:var(--color-text-secondary);flex-shrink:0;"></i>
+              <span class="travel-connector-text">15 min walk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2:00 PM — Ubud Monkey Forest -->
+        <div class="timeline-item">
+          <div class="timeline-time">2:00 PM</div>
+          <div class="timeline-dot afternoon"></div>
+          <div class="activity-card">
+            <div class="activity-photo" style="background-image:url('https://images.unsplash.com/photo-1537953773345-d172ccf13cf4?w=200&h=200&fit=crop&q=80');"></div>
+            <div class="activity-content">
+              <div class="activity-top-row">
+                <span class="activity-name">Ubud Monkey Forest</span>
+                <div class="activity-drag">
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                </div>
+              </div>
+              <div class="activity-meta">
+                <span class="activity-tag tag-nature">Nature</span>
+                <span class="activity-duration">1.5 hours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel connector -->
+        <div class="timeline-item">
+          <div class="travel-connector">
+            <div class="travel-connector-line">
+              <i data-lucide="footprints" style="width:12px;height:12px;color:var(--color-text-secondary);flex-shrink:0;"></i>
+              <span class="travel-connector-text">10 min walk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4:30 PM — Ubud Art Market -->
+        <div class="timeline-item">
+          <div class="timeline-time">4:30 PM</div>
+          <div class="timeline-dot afternoon"></div>
+          <div class="activity-card">
+            <div class="activity-photo" style="background-image:url('https://images.unsplash.com/photo-1573790387438-4da905039392?w=200&h=200&fit=crop&q=80');"></div>
+            <div class="activity-content">
+              <div class="activity-top-row">
+                <span class="activity-name">Ubud Art Market</span>
+                <div class="activity-drag">
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                </div>
+              </div>
+              <div class="activity-meta">
+                <span class="activity-tag tag-shopping">Shopping</span>
+                <span class="activity-duration">1 hour</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel connector -->
+        <div class="timeline-item">
+          <div class="travel-connector">
+            <div class="travel-connector-line">
+              <i data-lucide="footprints" style="width:12px;height:12px;color:var(--color-text-secondary);flex-shrink:0;"></i>
+              <span class="travel-connector-text">12 min walk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6:00 PM — Sunset at Campuhan Ridge -->
+        <div class="timeline-item">
+          <div class="timeline-time">6:00 PM</div>
+          <div class="timeline-dot evening"></div>
+          <div class="activity-card">
+            <div class="activity-photo" style="background-image:url('https://images.unsplash.com/photo-1504681869696-d977211a5f4c?w=200&h=200&fit=crop&q=80');"></div>
+            <div class="activity-content">
+              <div class="activity-top-row">
+                <span class="activity-name">Sunset at Campuhan Ridge</span>
+                <div class="activity-drag">
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                </div>
+              </div>
+              <div class="activity-meta">
+                <span class="activity-tag tag-photography">Photography</span>
+                <span class="activity-duration">1 hour</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel connector -->
+        <div class="timeline-item">
+          <div class="travel-connector">
+            <div class="travel-connector-line">
+              <i data-lucide="bike" style="width:12px;height:12px;color:var(--color-text-secondary);flex-shrink:0;"></i>
+              <span class="travel-connector-text">15 min by scooter</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8:00 PM — Locavore Restaurant -->
+        <div class="timeline-item">
+          <div class="timeline-time">8:00 PM</div>
+          <div class="timeline-dot evening"></div>
+          <div class="activity-card">
+            <div class="activity-photo" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&h=200&fit=crop&q=80');"></div>
+            <div class="activity-content">
+              <div class="activity-top-row">
+                <span class="activity-name">Locavore Restaurant</span>
+                <div class="activity-drag">
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                  <div class="activity-drag-row"><span class="activity-drag-dot"></span><span class="activity-drag-dot"></span></div>
+                </div>
+              </div>
+              <div class="activity-meta">
+                <span class="activity-tag tag-dining">Fine Dining</span>
+                <span class="activity-duration">2 hours</span>
+              </div>
+              <div class="activity-note">Dinner</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================
+         FAB — Add Activity
+         ============================ -->
+    <button class="fab" title="Add activity">
+      <i data-lucide="plus" style="width:24px;height:24px;"></i>
+    </button>
+
+    <!-- ============================
+         BOTTOM NAV
+         ============================ -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <i data-lucide="house" style="width:22px;height:22px;"></i>
+        <span class="nav-label">Home</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="compass" style="width:22px;height:22px;"></i>
+        <span class="nav-label">Explore</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-import">
+          <i data-lucide="plus" style="width:22px;height:22px;"></i>
+        </div>
+      </div>
+      <div class="nav-item active">
+        <i data-lucide="map-pin" style="width:22px;height:22px;"></i>
+        <span class="nav-label">My Trips</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="circle-user" style="width:22px;height:22px;"></i>
+        <span class="nav-label">Profile</span>
+      </div>
+    </div>
+
+    <!-- ============================
+         LOADING OVERLAY
+         ============================ -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Building your itinerary...</div>
+      <div class="loading-subtext">Finding the best of Bali for you</div>
+    </div>
+
+    <!-- ============================
+         SETUP MODAL
+         ============================ -->
+    <div class="setup-overlay" id="setupOverlay">
+      <div class="setup-sheet">
+        <div class="setup-handle"></div>
+
+        <div class="setup-hero">
+          <div class="setup-hero-icon">
+            <i data-lucide="map-pin" style="width:26px;height:26px;color:white;"></i>
+          </div>
+          <div class="setup-title">Plan Your Trip to Bali</div>
+          <div class="setup-subtitle">Customize your perfect itinerary</div>
+        </div>
+
+        <!-- Duration -->
+        <div class="setup-section">
+          <div class="setup-section-label">How many days?</div>
+          <div class="duration-stepper">
+            <button class="stepper-btn" id="stepperMinus">
+              <i data-lucide="minus" style="width:18px;height:18px;"></i>
+            </button>
+            <div>
+              <div class="stepper-value" id="stepperValue">7</div>
+              <div class="stepper-unit" style="text-align:center;">days</div>
+            </div>
+            <button class="stepper-btn" id="stepperPlus">
+              <i data-lucide="plus" style="width:18px;height:18px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Traveler type -->
+        <div class="setup-section">
+          <div class="setup-section-label">Who's traveling?</div>
+          <div class="chip-group" data-group="traveler">
+            <div class="chip" data-value="solo">
+              <i data-lucide="user" style="width:14px;height:14px;"></i>
+              Solo
+            </div>
+            <div class="chip selected" data-value="couple">
+              <i data-lucide="heart" style="width:14px;height:14px;"></i>
+              Couple
+            </div>
+            <div class="chip" data-value="family">
+              <i data-lucide="users" style="width:14px;height:14px;"></i>
+              Family
+            </div>
+            <div class="chip" data-value="friends">
+              <i data-lucide="smile" style="width:14px;height:14px;"></i>
+              Friends
+            </div>
+          </div>
+        </div>
+
+        <!-- Trip pace -->
+        <div class="setup-section">
+          <div class="setup-section-label">Trip pace</div>
+          <div class="chip-group" data-group="pace">
+            <div class="chip" data-value="relaxed">
+              <i data-lucide="cloud" style="width:14px;height:14px;"></i>
+              Relaxed
+            </div>
+            <div class="chip selected" data-value="balanced">
+              <i data-lucide="scale" style="width:14px;height:14px;"></i>
+              Balanced
+            </div>
+            <div class="chip" data-value="packed">
+              <i data-lucide="zap" style="width:14px;height:14px;"></i>
+              Packed
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="setup-section">
+          <div class="setup-section-label">Budget</div>
+          <div class="budget-options">
+            <div class="budget-option" data-value="budget">
+              <span class="budget-symbol">$</span>
+              <span class="budget-label">Budget</span>
+            </div>
+            <div class="budget-option selected" data-value="moderate">
+              <span class="budget-symbol">$$</span>
+              <span class="budget-label">Moderate</span>
+            </div>
+            <div class="budget-option" data-value="comfortable">
+              <span class="budget-symbol">$$$</span>
+              <span class="budget-label">Comfortable</span>
+            </div>
+            <div class="budget-option" data-value="luxury">
+              <span class="budget-symbol">$$$$</span>
+              <span class="budget-label">Luxury</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generate button -->
+        <button class="btn-generate" id="btnGenerate">
+          <i data-lucide="sparkles" style="width:18px;height:18px;"></i>
+          Generate Itinerary
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Initialize Lucide icons
+  lucide.createIcons();
+
+  // =========================================
+  // SETUP MODAL INTERACTIONS
+  // =========================================
+  const setupOverlay = document.getElementById('setupOverlay');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const btnGenerate = document.getElementById('btnGenerate');
+
+  // Duration stepper
+  const stepperMinus = document.getElementById('stepperMinus');
+  const stepperPlus = document.getElementById('stepperPlus');
+  const stepperValue = document.getElementById('stepperValue');
+  let days = 7;
+
+  stepperMinus.addEventListener('click', () => {
+    if (days > 1) {
+      days--;
+      stepperValue.textContent = days;
+    }
+  });
+
+  stepperPlus.addEventListener('click', () => {
+    if (days < 21) {
+      days++;
+      stepperValue.textContent = days;
+    }
+  });
+
+  // Chip selection (single select within group)
+  document.querySelectorAll('.chip-group').forEach(group => {
+    group.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      });
+    });
+  });
+
+  // Budget selection
+  document.querySelectorAll('.budget-option').forEach(option => {
+    option.addEventListener('click', () => {
+      document.querySelectorAll('.budget-option').forEach(o => o.classList.remove('selected'));
+      option.classList.add('selected');
+    });
+  });
+
+  // Generate itinerary
+  btnGenerate.addEventListener('click', () => {
+    // Hide setup sheet
+    setupOverlay.classList.add('hidden');
+
+    // Show loading state after sheet slides down
+    setTimeout(() => {
+      loadingOverlay.classList.add('visible');
+    }, 200);
+
+    // Hide loading, reveal timeline
+    setTimeout(() => {
+      loadingOverlay.classList.remove('visible');
+    }, 2200);
+  });
+
+  // =========================================
+  // DAY TAB INTERACTIONS
+  // =========================================
+  const dayTabs = document.querySelectorAll('.day-tab');
+
+  dayTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      dayTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      // Scroll tab into view
+      tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+      // Reset timeline animations
+      document.querySelectorAll('.timeline-item').forEach((item, i) => {
+        item.style.animation = 'none';
+        item.offsetHeight; // force reflow
+        item.style.animation = '';
+      });
+
+      // Scroll timeline to top
+      document.getElementById('timelineScroll').scrollTop = 0;
+    });
+  });
+
+  // =========================================
+  // ACTIVITY CARD PRESS FEEDBACK
+  // =========================================
+  document.querySelectorAll('.activity-card').forEach(card => {
+    card.addEventListener('mousedown', () => {
+      card.style.transform = 'scale(0.98)';
+      card.style.boxShadow = 'var(--shadow-card-pressed)';
+    });
+    card.addEventListener('mouseup', () => {
+      card.style.transform = '';
+      card.style.boxShadow = '';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.style.boxShadow = '';
+    });
+  });
+</script>
+
+</body>
+</html>

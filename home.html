@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Someday — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  /* ========================================
+     CSS VARIABLES — Someday Design Tokens
+     ======================================== */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* ========================================
+     RESET + BASE
+     ======================================== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: #E8E4DE;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
+  /* ========================================
+     DEVICE FRAME
+     ======================================== */
+  .device-frame {
+    width: 390px;
+    height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #1A1A1E,
+      0 0 0 4px #3A3A3E,
+      0 20px 60px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  /* Dynamic Island */
+  .device-frame::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 36px;
+    background: #1A1A1E;
+    border-radius: 20px;
+    z-index: 100;
+  }
+
+  /* ========================================
+     SCROLLABLE CONTENT AREA
+     ======================================== */
+  .screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-bottom: 100px; /* space for bottom nav */
+  }
+
+  .screen::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ========================================
+     STATUS BAR
+     ======================================== */
+  .status-bar {
+    height: 54px;
+    width: 100%;
+    padding: 14px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: linear-gradient(to bottom, var(--color-background) 60%, transparent);
+    pointer-events: none;
+  }
+
+  .status-bar-time {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-text);
+  }
+
+  .status-bar-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .status-bar-icons span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* ========================================
+     HEADER
+     ======================================== */
+  .header {
+    padding: 4px 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-greeting h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-secondary);
+  }
+
+  .header-greeting .greeting-sub {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-coral) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    font-family: var(--font-heading);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 200ms ease;
+  }
+
+  .header-avatar:active {
+    transform: scale(0.95);
+  }
+
+  /* ========================================
+     NEXT DREAM CARD
+     ======================================== */
+  .dream-card-wrapper {
+    padding: 0 20px;
+    margin-bottom: 28px;
+  }
+
+  .dream-card {
+    width: 100%;
+    height: 320px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: var(--shadow-card-elevated);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+
+  .dream-card:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .dream-card-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg,
+        #C4704B 0%,
+        #D4A843 25%,
+        #E8856C 50%,
+        #C4704B 75%,
+        #D4A843 100%
+      );
+    background-size: 200% 200%;
+    animation: kenBurns 20s infinite alternate ease-in-out;
+    transform-origin: center center;
+  }
+
+  @keyframes kenBurns {
+    0% {
+      transform: scale(1.0);
+      background-position: 0% 0%;
+    }
+    50% {
+      transform: scale(1.03);
+      background-position: 100% 50%;
+    }
+    100% {
+      transform: scale(1.05);
+      background-position: 50% 100%;
+    }
+  }
+
+  /* Noise texture overlay for realism */
+  .dream-card-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+  }
+
+  .dream-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 35%, rgba(0,0,0,0.65) 100%);
+    z-index: 2;
+  }
+
+  .dream-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    z-index: 3;
+  }
+
+  .dream-card-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-cta);
+    margin-bottom: 8px;
+  }
+
+  .dream-card-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 34px;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .dream-card-subtitle {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .dream-card-price {
+    color: #FFFFFF;
+    font-weight: 600;
+  }
+
+  /* ========================================
+     SECTION HEADERS
+     ======================================== */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--color-text);
+  }
+
+  .section-link {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+    min-width: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .section-link:active {
+    opacity: 0.6;
+  }
+
+  /* ========================================
+     RECENTLY SAVED — HORIZONTAL SCROLL
+     ======================================== */
+  .saved-section {
+    margin-bottom: 32px;
+  }
+
+  .saved-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 0 20px 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .saved-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .saved-card {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: transform 200ms ease;
+  }
+
+  .saved-card:active {
+    transform: scale(0.93);
+  }
+
+  .saved-card-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .saved-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 40%, rgba(0,0,0,0.6) 100%);
+  }
+
+  .saved-card-name {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 12px;
+    color: #FFFFFF;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* Individual card gradients */
+  .saved-card:nth-child(1) .saved-card-bg { background: linear-gradient(135deg, #C4704B, #D4A843); }
+  .saved-card:nth-child(2) .saved-card-bg { background: linear-gradient(135deg, #3A9E8F, #1B3A4B); }
+  .saved-card:nth-child(3) .saved-card-bg { background: linear-gradient(135deg, #E8856C, #C4704B); }
+  .saved-card:nth-child(4) .saved-card-bg { background: linear-gradient(135deg, #D4A843, #E8856C); }
+  .saved-card:nth-child(5) .saved-card-bg { background: linear-gradient(135deg, #1B3A4B, #3A9E8F); }
+  .saved-card:nth-child(6) .saved-card-bg { background: linear-gradient(135deg, #C4704B, #3A9E8F); }
+
+  /* ========================================
+     FOR YOU — DISCOVER FEED
+     ======================================== */
+  .feed-section {
+    padding: 0 20px;
+  }
+
+  .feed-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+
+  .feed-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .feed-card-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feed-card-image-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .feed-card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 50%, rgba(0,0,0,0.15) 100%);
+  }
+
+  /* Individual feed card gradients */
+  .feed-card:nth-child(1) .feed-card-image-bg { background: linear-gradient(135deg, #C4704B 0%, #E8856C 40%, #D4A843 100%); }
+  .feed-card:nth-child(2) .feed-card-image-bg { background: linear-gradient(135deg, #1B3A4B 0%, #3A9E8F 50%, #1B3A4B 100%); }
+  .feed-card:nth-child(3) .feed-card-image-bg { background: linear-gradient(135deg, #D4A843 0%, #C4704B 50%, #E8856C 100%); }
+  .feed-card:nth-child(4) .feed-card-image-bg { background: linear-gradient(135deg, #3A9E8F 0%, #1B3A4B 40%, #3A9E8F 100%); }
+  .feed-card:nth-child(5) .feed-card-image-bg { background: linear-gradient(135deg, #E8856C 0%, #D4A843 50%, #C4704B 100%); }
+
+  .feed-card-body {
+    padding: 14px 16px 16px;
+  }
+
+  .feed-card-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .feed-card-hook {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .feed-card-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-text-secondary);
+    background: var(--color-background);
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+  }
+
+  /* ========================================
+     END MESSAGE
+     ======================================== */
+  .end-message {
+    text-align: center;
+    padding: 24px 40px 40px;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+  }
+
+  .end-message-icon {
+    display: block;
+    margin: 0 auto 8px;
+    color: var(--color-border);
+  }
+
+  /* ========================================
+     BOTTOM NAVIGATION
+     ======================================== */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 8px 8px 28px;
+    z-index: 90;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    min-width: 48px;
+    min-height: 48px;
+    justify-content: center;
+    transition: color 200ms ease;
+    position: relative;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-item .nav-label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+    transition: color 200ms ease;
+  }
+
+  .nav-item.active .nav-icon,
+  .nav-item.active .nav-label {
+    color: var(--color-primary);
+  }
+
+  .nav-item:not(.active) .nav-icon,
+  .nav-item:not(.active) .nav-label {
+    color: var(--color-text-secondary);
+  }
+
+  .nav-item:active:not(.nav-import) {
+    opacity: 0.6;
+  }
+
+  /* Import (center raised) button */
+  .nav-import {
+    position: relative;
+    top: -14px;
+  }
+
+  .nav-import-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(196, 112, 75, 0.4);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    cursor: pointer;
+  }
+
+  .nav-import-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 8px rgba(196, 112, 75, 0.3);
+  }
+
+  .nav-import .nav-label {
+    margin-top: 4px;
+    color: var(--color-text-secondary);
+  }
+
+  /* ========================================
+     REDUCED MOTION
+     ======================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .dream-card-bg {
+      animation: none;
+      transform: none;
+    }
+
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
+  /* ========================================
+     RESPONSIVE TWEAKS
+     ======================================== */
+  @media (max-width: 420px) {
+    body {
+      padding: 0;
+    }
+
+    .device-frame {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .device-frame::before {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+
+  <!-- Scrollable content area -->
+  <div class="screen">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons">
+        <span style="font-size:11px;">5G</span>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <rect x="0" y="6" width="3" height="6" rx="1" fill="#1A1A1E"/>
+          <rect x="4.5" y="4" width="3" height="8" rx="1" fill="#1A1A1E"/>
+          <rect x="9" y="1.5" width="3" height="10.5" rx="1" fill="#1A1A1E"/>
+          <rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1A1E" opacity="0.3"/>
+        </svg>
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+          <rect x="0.5" y="0.5" width="18" height="11" rx="2" stroke="#1A1A1E" stroke-opacity="0.35"/>
+          <rect x="2" y="2" width="13" height="8" rx="1" fill="#1A1A1E"/>
+          <path d="M20 4.5V7.5C20.8 7.2 20.8 4.8 20 4.5Z" fill="#1A1A1E" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-greeting">
+        <h2>Good morning, Alex</h2>
+        <p class="greeting-sub">Where to next?</p>
+      </div>
+      <div class="header-avatar">A</div>
+    </div>
+
+    <!-- Next Dream Card -->
+    <div class="dream-card-wrapper">
+      <div class="dream-card">
+        <div class="dream-card-bg"></div>
+        <div class="dream-card-overlay"></div>
+        <div class="dream-card-content">
+          <span class="dream-card-label">Your Next Dream</span>
+          <h2 class="dream-card-title">Bali, Indonesia</h2>
+          <p class="dream-card-subtitle">
+            Flights from Des Moines starting at <span class="dream-card-price">$487</span> in October
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recently Saved -->
+    <div class="saved-section">
+      <div class="section-header">
+        <h3 class="section-title">Recently Saved</h3>
+        <a class="section-link" href="#">See all</a>
+      </div>
+      <div class="saved-scroll">
+        <div class="saved-card">
+          <div class="saved-card-bg"></div>
+          <div class="saved-card-overlay"></div>
+          <span class="saved-card-name">Kyoto</span>
+        </div>
+        <div class="saved-card">
+          <div class="saved-card-bg"></div>
+          <div class="saved-card-overlay"></div>
+          <span class="saved-card-name">Amalfi</span>
+        </div>
+        <div class="saved-card">
+          <div class="saved-card-bg"></div>
+          <div class="saved-card-overlay"></div>
+          <span class="saved-card-name">Lisbon</span>
+        </div>
+        <div class="saved-card">
+          <div class="saved-card-bg"></div>
+          <div class="saved-card-overlay"></div>
+          <span class="saved-card-name">Marrakech</span>
+        </div>
+        <div class="saved-card">
+          <div class="saved-card-bg"></div>
+          <div class="saved-card-overlay"></div>
+          <span class="saved-card-name">Reykjavik</span>
+        </div>
+        <div class="saved-card">
+          <div class="saved-card-bg"></div>
+          <div class="saved-card-overlay"></div>
+          <span class="saved-card-name">Dubrovnik</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- For You — Discover Feed -->
+    <div class="feed-section">
+      <div class="section-header" style="padding: 0; margin-bottom: 16px;">
+        <h3 class="section-title">For You</h3>
+      </div>
+
+      <!-- Card 1 -->
+      <div class="feed-card">
+        <div class="feed-card-image">
+          <div class="feed-card-image-bg"></div>
+          <div class="feed-card-image-overlay"></div>
+        </div>
+        <div class="feed-card-body">
+          <h3 class="feed-card-title">Ubud, Bali</h3>
+          <p class="feed-card-hook">Jungle temples and the best $3 meal you'll ever eat.</p>
+          <span class="feed-card-tag">Similar to places you've saved</span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="feed-card">
+        <div class="feed-card-image">
+          <div class="feed-card-image-bg"></div>
+          <div class="feed-card-image-overlay"></div>
+        </div>
+        <div class="feed-card-body">
+          <h3 class="feed-card-title">Porto, Portugal</h3>
+          <p class="feed-card-hook">Tiled alleys, port wine caves, and sunsets over the Douro.</p>
+          <span class="feed-card-tag">Trending this season</span>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="feed-card">
+        <div class="feed-card-image">
+          <div class="feed-card-image-bg"></div>
+          <div class="feed-card-image-overlay"></div>
+        </div>
+        <div class="feed-card-body">
+          <h3 class="feed-card-title">Oaxaca, Mexico</h3>
+          <p class="feed-card-hook">Mezcal tastings, ancient ruins, and markets bursting with color.</p>
+          <span class="feed-card-tag">Great for solo travelers</span>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="feed-card">
+        <div class="feed-card-image">
+          <div class="feed-card-image-bg"></div>
+          <div class="feed-card-image-overlay"></div>
+        </div>
+        <div class="feed-card-body">
+          <h3 class="feed-card-title">Queenstown, NZ</h3>
+          <p class="feed-card-hook">Mountains, bungee jumps, and the world's most scenic drives.</p>
+          <span class="feed-card-tag">Adventure pick</span>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="feed-card">
+        <div class="feed-card-image">
+          <div class="feed-card-image-bg"></div>
+          <div class="feed-card-image-overlay"></div>
+        </div>
+        <div class="feed-card-body">
+          <h3 class="feed-card-title">Cinque Terre, Italy</h3>
+          <p class="feed-card-hook">Five pastel villages perched above the bluest water you've seen.</p>
+          <span class="feed-card-tag">Similar to places you've saved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- End Message -->
+    <div class="end-message">
+      <svg class="end-message-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      That's everything for now.<br>Go explore your bucket list.
+    </div>
+
+  </div><!-- /.screen -->
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <!-- Home (active) -->
+    <div class="nav-item active">
+      <i data-lucide="house" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">Home</span>
+    </div>
+
+    <!-- Explore -->
+    <div class="nav-item">
+      <i data-lucide="compass" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">Explore</span>
+    </div>
+
+    <!-- Import (raised center) -->
+    <div class="nav-item nav-import">
+      <div class="nav-import-btn">
+        <i data-lucide="plus" style="width:26px;height:26px;color:white;"></i>
+      </div>
+      <span class="nav-label">Import</span>
+    </div>
+
+    <!-- My Trips -->
+    <div class="nav-item">
+      <i data-lucide="map-pin" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">My Trips</span>
+    </div>
+
+    <!-- Profile -->
+    <div class="nav-item">
+      <i data-lucide="user" class="nav-icon" style="width:24px;height:24px;"></i>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+
+</div><!-- /.device-frame -->
+
+<script>
+  // Initialize Lucide icons
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+
+  // Fallback: wait for Lucide script to load
+  window.addEventListener('load', function() {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+</script>
+
+</body>
+</html>

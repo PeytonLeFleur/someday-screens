@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Someday - Explore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  /* ========== CSS VARIABLES ========== */
+  :root {
+    --color-primary: #C4704B;
+    --color-secondary: #1B3A4B;
+    --color-cta: #D4A843;
+    --color-accent-coral: #E8856C;
+    --color-visited: #3A9E8F;
+    --color-background: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1A1A1E;
+    --color-text-secondary: #6B6B6B;
+    --color-border: #E8E4DE;
+    --color-error: #D64545;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card-elevated: 0 4px 16px rgba(0,0,0,0.12);
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+  }
+
+  /* ========== RESET ========== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ========== PAGE FRAME ========== */
+  html, body {
+    height: 100%;
+    background: #2C2C2E;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+    overflow-y: auto;
+  }
+
+  /* Device frame */
+  .device-frame {
+    width: 390px;
+    min-height: 844px;
+    height: 844px;
+    background: var(--color-background);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #1a1a1e, 0 0 0 6px #3a3a3e, 0 20px 60px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 54px;
+    padding: 14px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-background);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 20;
+  }
+
+  .status-bar .time {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: 0.2px;
+  }
+
+  .status-bar .icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* Dynamic island */
+  .dynamic-island {
+    width: 126px;
+    height: 36px;
+    background: #1A1A1E;
+    border-radius: 20px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* ========== SCROLLABLE CONTENT ========== */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 90px;
+    scroll-behavior: smooth;
+  }
+
+  .scroll-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ========== STICKY SEARCH BAR ========== */
+  .search-section {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: var(--color-background);
+    padding: 8px 20px 12px;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0 16px;
+    height: 48px;
+    box-shadow: var(--shadow-card);
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+    cursor: text;
+  }
+
+  .search-bar:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(196, 112, 75, 0.15);
+  }
+
+  .search-bar .search-icon {
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+
+  .search-bar input::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+
+  /* ========== SECTION HEADERS ========== */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    margin-bottom: 14px;
+  }
+
+  .section-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.3px;
+  }
+
+  .section-header .section-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .section-header .see-all {
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .section-header .see-all:active {
+    opacity: 0.6;
+  }
+
+  /* ========== TRENDING DESTINATIONS CAROUSEL ========== */
+  .trending-section {
+    margin-top: 8px;
+    margin-bottom: var(--space-xl);
+  }
+
+  .carousel {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px 4px;
+    scrollbar-width: none;
+  }
+
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .trending-card {
+    flex-shrink: 0;
+    width: 150px;
+    height: 200px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition: transform 100ms ease;
+  }
+
+  .trending-card:active {
+    transform: scale(0.97);
+  }
+
+  .trending-card .card-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .trending-card .card-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 40%, rgba(0,0,0,0.65) 100%);
+  }
+
+  .trending-card .card-info {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    z-index: 2;
+  }
+
+  .trending-card .card-info .dest-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .trending-card .card-info .dest-country {
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  /* ========== CATEGORY PILLS ========== */
+  .categories-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .pills-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px 4px;
+    scrollbar-width: none;
+  }
+
+  .pills-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pill {
+    flex-shrink: 0;
+    height: 36px;
+    padding: 0 18px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    white-space: nowrap;
+    scroll-snap-align: start;
+    min-height: 48px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .pill:active {
+    transform: scale(0.95);
+  }
+
+  .pill.active {
+    background: var(--color-primary);
+    color: #FFFFFF;
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(196, 112, 75, 0.25);
+  }
+
+  .pill .pill-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ========== CURATED COLLECTIONS ========== */
+  .collections-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .collections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 20px;
+  }
+
+  .collection-card {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 100ms ease;
+  }
+
+  .collection-card:active {
+    transform: scale(0.97);
+  }
+
+  .collection-card .card-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .collection-card .card-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 30%, rgba(0,0,0,0.7) 100%);
+  }
+
+  .collection-card .card-title {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.3;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+
+  /* ========== NEAR YOU ========== */
+  .near-section {
+    margin-bottom: var(--space-lg);
+  }
+
+  .distance-chips {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px;
+    margin-bottom: 14px;
+  }
+
+  .distance-chip {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    min-height: 48px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .distance-chip:active {
+    transform: scale(0.95);
+  }
+
+  .distance-chip.active {
+    background: var(--color-secondary);
+    color: #FFFFFF;
+    border-color: var(--color-secondary);
+  }
+
+  .near-cards {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px 4px;
+    scrollbar-width: none;
+  }
+
+  .near-cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .near-card {
+    flex-shrink: 0;
+    width: 260px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition: transform 100ms ease;
+  }
+
+  .near-card:active {
+    transform: scale(0.97);
+  }
+
+  .near-card .card-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .near-card .card-body {
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .near-card .card-body .place-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+
+  .near-card .card-body .place-sub {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  .near-card .drive-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-background);
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .near-card .drive-badge .badge-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ========== BOTTOM NAVIGATION ========== */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 84px;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding-top: 8px;
+    padding-bottom: 28px;
+    z-index: 20;
+  }
+
+  .nav-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    min-width: 48px;
+    min-height: 48px;
+    justify-content: center;
+    transition: all 150ms ease;
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .nav-tab:active {
+    transform: scale(0.92);
+  }
+
+  .nav-tab .tab-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  .nav-tab .tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .nav-tab.active .tab-icon {
+    color: var(--color-primary);
+  }
+
+  .nav-tab.active .tab-label {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  /* Import (center) raised button */
+  .nav-tab.import-tab {
+    position: relative;
+    top: -8px;
+  }
+
+  .import-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(196, 112, 75, 0.35);
+    transition: transform 100ms ease, box-shadow 200ms ease;
+  }
+
+  .import-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 6px rgba(196, 112, 75, 0.25);
+  }
+
+  .import-btn .tab-icon {
+    color: #FFFFFF !important;
+  }
+
+  .nav-tab.import-tab .tab-label {
+    margin-top: 4px;
+  }
+
+  /* ========== ANIMATIONS ========== */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-in {
+    animation: fadeInUp 400ms ease forwards;
+  }
+
+  .animate-in:nth-child(1) { animation-delay: 0ms; }
+  .animate-in:nth-child(2) { animation-delay: 60ms; }
+  .animate-in:nth-child(3) { animation-delay: 120ms; }
+  .animate-in:nth-child(4) { animation-delay: 180ms; }
+  .animate-in:nth-child(5) { animation-delay: 240ms; }
+  .animate-in:nth-child(6) { animation-delay: 300ms; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .trending-card:active,
+    .collection-card:active,
+    .near-card:active,
+    .pill:active,
+    .distance-chip:active,
+    .nav-tab:active {
+      transform: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="dynamic-island"></div>
+    <div class="icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="6" width="3" height="6" rx="1" fill="#1A1A1E"/><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#1A1A1E"/><rect x="9" y="2" width="3" height="10" rx="1" fill="#1A1A1E"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1A1E"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.7 2.5 13.1 3.7 14.7 5.6L16 4.2C14 1.8 11.2 0.3 8 0.3S2 1.8 0 4.2L1.3 5.6C2.9 3.7 5.3 2.5 8 2.5Z" fill="#1A1A1E"/><path d="M8 6.5C9.7 6.5 11.2 7.2 12.3 8.4L13.6 7C12.1 5.5 10.2 4.5 8 4.5S3.9 5.5 2.4 7L3.7 8.4C4.8 7.2 6.3 6.5 8 6.5Z" fill="#1A1A1E"/><circle cx="8" cy="11" r="1.5" fill="#1A1A1E"/></svg>
+      <svg width="27" height="12" viewBox="0 0 27 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="3" stroke="#1A1A1E" stroke-width="1.2"/><rect x="23" y="4" width="2.5" height="4" rx="1" fill="#1A1A1E"/><rect x="1.5" y="2.5" width="17" height="7" rx="1.5" fill="#1A1A1E"/></svg>
+    </div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="scroll-content">
+
+    <!-- Sticky Search Bar -->
+    <div class="search-section">
+      <div class="search-bar" onclick="this.querySelector('input').focus()">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Where do you want to go?" />
+      </div>
+    </div>
+
+    <!-- Trending Destinations -->
+    <section class="trending-section">
+      <div class="section-header">
+        <i data-lucide="trending-up" class="section-icon" style="color: var(--color-accent-coral);"></i>
+        <h2>Trending</h2>
+        <a class="see-all">See All</a>
+      </div>
+      <div class="carousel" id="trendingCarousel">
+        <!-- Amalfi Coast -->
+        <div class="trending-card animate-in">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=400&h=540&fit=crop&crop=center" alt="Amalfi Coast" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-info">
+            <div class="dest-name">Amalfi Coast</div>
+            <div class="dest-country">Italy</div>
+          </div>
+        </div>
+        <!-- Kyoto -->
+        <div class="trending-card animate-in">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=540&fit=crop&crop=center" alt="Kyoto" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-info">
+            <div class="dest-name">Kyoto</div>
+            <div class="dest-country">Japan</div>
+          </div>
+        </div>
+        <!-- Patagonia -->
+        <div class="trending-card animate-in">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1531761535209-180857e963b9?w=400&h=540&fit=crop&crop=center" alt="Patagonia" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-info">
+            <div class="dest-name">Patagonia</div>
+            <div class="dest-country">Argentina</div>
+          </div>
+        </div>
+        <!-- Marrakech -->
+        <div class="trending-card animate-in">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400&h=540&fit=crop&crop=center" alt="Marrakech" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-info">
+            <div class="dest-name">Marrakech</div>
+            <div class="dest-country">Morocco</div>
+          </div>
+        </div>
+        <!-- Faroe Islands -->
+        <div class="trending-card animate-in">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1590011330616-ac4e436e7939?w=400&h=540&fit=crop&crop=center" alt="Faroe Islands" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-info">
+            <div class="dest-name">Faroe Islands</div>
+            <div class="dest-country">Denmark</div>
+          </div>
+        </div>
+        <!-- Santorini -->
+        <div class="trending-card animate-in">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&h=540&fit=crop&crop=center" alt="Santorini" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-info">
+            <div class="dest-name">Santorini</div>
+            <div class="dest-country">Greece</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Pills -->
+    <section class="categories-section">
+      <div class="pills-row" id="pillsRow">
+        <button class="pill active" data-category="beach">
+          <i data-lucide="umbrella" class="pill-icon"></i>Beach
+        </button>
+        <button class="pill" data-category="mountains">
+          <i data-lucide="mountain" class="pill-icon"></i>Mountains
+        </button>
+        <button class="pill" data-category="city">
+          <i data-lucide="building-2" class="pill-icon"></i>City
+        </button>
+        <button class="pill" data-category="culture">
+          <i data-lucide="landmark" class="pill-icon"></i>Culture
+        </button>
+        <button class="pill" data-category="food">
+          <i data-lucide="utensils" class="pill-icon"></i>Food
+        </button>
+        <button class="pill" data-category="adventure">
+          <i data-lucide="compass" class="pill-icon"></i>Adventure
+        </button>
+        <button class="pill" data-category="hidden-gems">
+          <i data-lucide="gem" class="pill-icon"></i>Hidden Gems
+        </button>
+        <button class="pill" data-category="budget">
+          <i data-lucide="wallet" class="pill-icon"></i>Budget-Friendly
+        </button>
+        <button class="pill" data-category="luxury">
+          <i data-lucide="sparkles" class="pill-icon"></i>Luxury
+        </button>
+        <button class="pill" data-category="road-trip">
+          <i data-lucide="car" class="pill-icon"></i>Road Trip
+        </button>
+      </div>
+    </section>
+
+    <!-- Curated Collections -->
+    <section class="collections-section">
+      <div class="section-header">
+        <i data-lucide="layout-grid" class="section-icon" style="color: var(--color-cta);"></i>
+        <h2>Collections</h2>
+        <a class="see-all">See All</a>
+      </div>
+      <div class="collections-grid">
+        <div class="collection-card">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=400&h=400&fit=crop&crop=center" alt="Southeast Asia" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-title">Underrated Southeast Asia</div>
+        </div>
+        <div class="collection-card">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&h=400&fit=crop&crop=center" alt="Europe Budget" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-title">Best of Europe Under $1000</div>
+        </div>
+        <div class="collection-card">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=400&fit=crop&crop=center" alt="National Parks" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-title">National Parks You Haven't Heard Of</div>
+        </div>
+        <div class="collection-card">
+          <img class="card-bg" src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=400&fit=crop&crop=center" alt="Weekend Drives" loading="lazy" />
+          <div class="card-gradient"></div>
+          <div class="card-title">Weekend Drives Within 5 Hours</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Near You -->
+    <section class="near-section">
+      <div class="section-header">
+        <i data-lucide="map-pin" class="section-icon" style="color: var(--color-visited);"></i>
+        <h2>Near You</h2>
+      </div>
+      <div class="distance-chips" id="distanceChips">
+        <button class="distance-chip active" data-distance="2">2 hours</button>
+        <button class="distance-chip" data-distance="4">4 hours</button>
+        <button class="distance-chip" data-distance="8">8 hours</button>
+      </div>
+      <div class="near-cards">
+        <!-- Card 1 -->
+        <div class="near-card">
+          <img class="card-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=520&h=280&fit=crop&crop=center" alt="Monterey Bay" loading="lazy" />
+          <div class="card-body">
+            <div>
+              <div class="place-name">Monterey Bay</div>
+              <div class="place-sub">California</div>
+            </div>
+            <div class="drive-badge">
+              <i data-lucide="car" class="badge-icon"></i>
+              1h 40m
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="near-card">
+          <img class="card-img" src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=520&h=280&fit=crop&crop=center" alt="Big Sur" loading="lazy" />
+          <div class="card-body">
+            <div>
+              <div class="place-name">Big Sur</div>
+              <div class="place-sub">California</div>
+            </div>
+            <div class="drive-badge">
+              <i data-lucide="car" class="badge-icon"></i>
+              2h 15m
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="near-card">
+          <img class="card-img" src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=520&h=280&fit=crop&crop=center" alt="Napa Valley" loading="lazy" />
+          <div class="card-body">
+            <div>
+              <div class="place-name">Napa Valley</div>
+              <div class="place-sub">California</div>
+            </div>
+            <div class="drive-badge">
+              <i data-lucide="car" class="badge-icon"></i>
+              1h 10m
+            </div>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="near-card">
+          <img class="card-img" src="https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?w=520&h=280&fit=crop&crop=center" alt="Lake Tahoe" loading="lazy" />
+          <div class="card-body">
+            <div>
+              <div class="place-name">Lake Tahoe</div>
+              <div class="place-sub">California / Nevada</div>
+            </div>
+            <div class="drive-badge">
+              <i data-lucide="car" class="badge-icon"></i>
+              3h 20m
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- end scroll-content -->
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-tab" data-tab="home">
+      <i data-lucide="house" class="tab-icon"></i>
+      <span class="tab-label">Home</span>
+    </button>
+    <button class="nav-tab active" data-tab="explore">
+      <i data-lucide="compass" class="tab-icon"></i>
+      <span class="tab-label">Explore</span>
+    </button>
+    <button class="nav-tab import-tab" data-tab="import">
+      <div class="import-btn">
+        <i data-lucide="plus" class="tab-icon"></i>
+      </div>
+      <span class="tab-label">Import</span>
+    </button>
+    <button class="nav-tab" data-tab="trips">
+      <i data-lucide="map-pin" class="tab-icon"></i>
+      <span class="tab-label">My Trips</span>
+    </button>
+    <button class="nav-tab" data-tab="profile">
+      <i data-lucide="circle-user-round" class="tab-icon"></i>
+      <span class="tab-label">Profile</span>
+    </button>
+  </nav>
+
+</div><!-- end device-frame -->
+
+<script>
+  // Initialize Lucide icons
+  lucide.createIcons();
+
+  // Category pill toggle
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+
+  // Distance chip toggle
+  document.querySelectorAll('.distance-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.distance-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  // Bottom nav interaction (visual only)
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.tab === 'import') return;
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Card press feedback with gentle haptic-like visual response
+  document.querySelectorAll('.trending-card, .collection-card, .near-card').forEach(card => {
+    card.addEventListener('touchstart', () => {
+      card.style.transform = 'scale(0.97)';
+    }, { passive: true });
+    card.addEventListener('touchend', () => {
+      setTimeout(() => { card.style.transform = 'scale(1)'; }, 100);
+    }, { passive: true });
+    card.addEventListener('touchcancel', () => {
+      card.style.transform = 'scale(1)';
+    }, { passive: true });
+  });
+</script>
+</body>
+</html>
